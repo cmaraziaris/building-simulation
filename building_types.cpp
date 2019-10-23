@@ -95,7 +95,7 @@ public:
   void operate();
   void enter(visitor v);
   void exit(visitor v);
-  void stop_up(); //TODO: orismata
+  void stop_up();  //TODO: orismata
   void stop_down(); //TODO: orismata  
   void empty_all(); //TODO: orismata  
 };
