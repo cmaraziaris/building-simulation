@@ -9,7 +9,7 @@ class visitor
   int office_num;
   int priority; 
 public:
-  visitor();
+  visitor(int fl, int off);
   ~visitor();
   void set_priority(int);
   int get_priority();
@@ -24,10 +24,10 @@ class waiting_room
   int curr;
   visitor* visitors;  // can be done w/ list
 public:
-  waiting_room();
+  waiting_room(int N);
   ~waiting_room();
   void enter(visitor);
-  void exit(visitor); // orismata?
+  visitor exit(visitor); // orismata?
   int get_cap();
   int get_curr();
 };
@@ -39,24 +39,24 @@ class ground_level
   int curr;
   waiting_room wr; // TODO: orismata gia init
 public:
-  ground_level();
+  ground_level(int Ng);
   ~ground_level();
   void enter(visitor);
-  void exit(visitor); // orismata?
-  void wait(visitor);
+  visitor exit(visitor); // orismata?
+  void wait(visitor); //metaferei ton visitor sto wr (?)
 };
 
 /* ============================= */
 class office
 {
-  int number;
+  int number; //opt ? 
   int cap;
   visitor* visitors;
 public:
-  office();
+  office(int No, int num); // num questionable
   ~office();
   void enter(visitor);
-  void exit(visitor);
+  visitor exit(visitor);
   int get_cap();
 };
 
@@ -66,12 +66,12 @@ class floor
   int cap; //opt ? 
   int curr;//opt ?
   waiting_room wr;
-  office off[10];
+  office off[10]; //TODO: dynamic
 public:
-  floor();
+  floor(int Nf);
   ~floor();
   void enter(visitor);
-  void exit(visitor);
+  visitor exit(visitor);
   int get_cap();
   int get_curr();
 };
@@ -82,12 +82,12 @@ class elevator  //TODO: all of it
   int cap;
   int curr;
   visitor* visitors;
-public:
-  elevator();
+public: // isws ola ektos apo operate prepei n mpoun private, dunno
+  elevator(int Nl);
   ~elevator();
   void operate();
   void enter(visitor);
-  void exit(visitor);
+  visitor exit(visitor);
   void stop_up(); //TODO: orismata
   void stop_down(); //TODO: orismata  
   void empty_all(); //TODO: orismata
@@ -108,7 +108,7 @@ public:
   building(int N, int Nf, int Ng, int No, int Nl);
   ~building();
   void enter(visitor);
-  void exit(visitor); // orismata?
+  visitor exit(visitor); // orismata?
 };
 
 /* ============================= */
