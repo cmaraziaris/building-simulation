@@ -1,6 +1,8 @@
 /* ! CPP PROGRAM == OBJECTS THAT SEND/RECEIVE MESSAGES ! */
 
 //TODO: trades visitors metaksy xwrwn ???
+// probz prepei oi exit na epistrefoun visitor*
+// wste na mhn antigrafoume olh thn wra memory
 
 /* ============================= */
 class visitor
@@ -43,7 +45,7 @@ public:
   ~ground_level();
   void enter(visitor);
   visitor exit(visitor); // orismata?
-  void wait(visitor); //metaferei ton visitor sto wr (?)
+  void wait(visitor); //metaferei ton visitor sto wr (?)/nai
 };
 
 /* ============================= */
@@ -88,7 +90,7 @@ public: // isws ola ektos apo operate prepei n mpoun private, dunno
   void operate();
   void enter(visitor);
   visitor exit(visitor);
-  void stop_up(); //TODO: orismata
+  void stop_up();   //TODO: orismata
   void stop_down(); //TODO: orismata  
   void empty_all(); //TODO: orismata
   int get_cap();
@@ -102,7 +104,7 @@ class building
   int cap;  /* capacity */
   int curr; /*  current ppl inside */
   ground_level ground;
-  floor fl[4];
+  floor fl[4];  // TODO: dynamic
   elevator el;
 public:
   building(int N, int Nf, int Ng, int No, int Nl);
