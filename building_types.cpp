@@ -1,4 +1,6 @@
+/* ! CPP PROGRAM == OBJECTS THAT SEND/RECEIVE MESSAGES ! */
 
+//TODO: trades visitors metaksy xwrwn ???
 
 /* ============================= */
 class visitor
@@ -9,12 +11,10 @@ class visitor
 public:
   visitor();
   ~visitor();
-  void set_priority(int pr){  
-    priority = pr;
-  } // probz mporei na graftei kai ksexwrista gia readability
-  int get_priority(){
-    return priority;
-  }
+  void set_priority(int);
+  int get_priority();
+  int get_office_num();
+  int get_floor();
 };
 
 /* ============================= */
@@ -22,17 +22,21 @@ class waiting_room
 {
   int cap;
   int curr;
-  visitor* visitors;
+  visitor* visitors;  // can be done w/ list
 public:
   waiting_room();
   ~waiting_room();
   void enter(visitor);
   void exit(visitor); // orismata?
+  int get_cap();
+  int get_curr();
 };
 
 /* ============================= */
 class ground_level
 {
+  int cap;
+  int curr;
   waiting_room wr; // TODO: orismata gia init
 public:
   ground_level();
@@ -53,6 +57,7 @@ public:
   ~office();
   void enter(visitor);
   void exit(visitor);
+  int get_cap();
 };
 
 /* ============================= */
@@ -67,10 +72,12 @@ public:
   ~floor();
   void enter(visitor);
   void exit(visitor);
+  int get_cap();
+  int get_curr();
 };
 
 /* ============================= */
-class elevator
+class elevator  //TODO: all of it
 {
   int cap;
   int curr;
@@ -83,7 +90,9 @@ public:
   void exit(visitor);
   void stop_up(); //TODO: orismata
   void stop_down(); //TODO: orismata  
-  void empty_all(); //TODO: orismata  
+  void empty_all(); //TODO: orismata
+  int get_cap();
+  int get_curr();
 };
 
 
@@ -92,10 +101,11 @@ class building
 {
   int cap;  /* capacity */
   int curr; /*  current ppl inside */
-  ground_level grd;
+  ground_level ground;
   floor fl[4];
+  elevator el;
 public:
-  building();
+  building(int N, int Nf, int Ng, int No, int Nl);
   ~building();
   void enter(visitor);
   void exit(visitor); // orismata?
