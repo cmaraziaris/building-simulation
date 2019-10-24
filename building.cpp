@@ -3,6 +3,7 @@
 //TODO: trades visitors metaksy xwrwn ???
 // probz prepei oi exit na epistrefoun visitor*
 // wste na mhn antigrafoume olh thn wra memory
+// opt == optional
 
 #include <iostream>
 #include <cstdio>
@@ -149,12 +150,30 @@ int main(int argc, char const *argv[])
   int num_vst = atoi(argv[5]);
   int l_circl = atoi(argv[6]);
   
-  // test
-  visitor harry(3,7);
-  cout << harry.get_floor() << endl;
-  cout << harry.get_office_num() << endl;
-  harry.set_priority(667);
-  cout << harry.get_priority() << endl;
+  /* Generate visitors required */
+  srand(45);
+  visitor **ppl = new visitor *[num_vst];
+  for (int i = 0; i < num_vst; ++i)
+  {
+    int fl  = rand() % 4  + 1;  // opt: den exei kalh diaspora
+    int off = rand() % 11 + 1; 
+    ppl[i]  = new visitor(fl, off);
+  }
+
+  // for (int i = 0; i < num_vst; ++i)
+  //   cout << "floor: " << ppl[i]->get_floor() << " office:" << ppl[i]->get_office_num() << endl;
+
+  // // test
+  // visitor harry(3, 7);
+  // cout << harry.get_floor() << endl;
+  // cout << harry.get_office_num() << endl;
+  // harry.set_priority(667);
+  // cout << harry.get_priority() << endl;
   
+  /* Cleanup section */
+  for (int i = 0; i < num_vst; ++i)
+    delete ppl[i];
+  delete[] ppl;
+
   return 0;
 }
