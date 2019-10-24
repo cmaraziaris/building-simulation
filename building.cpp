@@ -68,7 +68,7 @@ public:
 /* ============================= */
 class office
 {
-  int number; //opt ? 
+  int number;  //opt ? 
   int cap;
   visitor* visitors;
 public:
