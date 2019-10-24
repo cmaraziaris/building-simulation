@@ -4,6 +4,10 @@
 // probz prepei oi exit na epistrefoun visitor*
 // wste na mhn antigrafoume olh thn wra memory
 
+#include <iostream>
+
+using namespace std;
+
 /* ============================= */
 class visitor
 {
@@ -12,12 +16,24 @@ class visitor
   int priority; 
 public:
   visitor(int fl, int off);
-  ~visitor();
+  //~visitor();
   void set_priority(int);
   int get_priority();
   int get_office_num();
   int get_floor();
 };
+
+visitor::visitor(int fl, int off){
+  floor = fl;
+  office_num = off;
+}
+
+void visitor::set_priority(int pr){ priority = pr; }
+
+int visitor::get_priority()  { return priority; }
+int visitor::get_office_num(){ return office_num; }
+int visitor::get_floor()     { return floor; }
+
 
 /* ============================= */
 class waiting_room
@@ -117,5 +133,11 @@ public:
 
 int main(int argc, char const *argv[])
 {
+  visitor harry(3,7);
+  cout << harry.get_floor() << endl;
+  cout << harry.get_office_num() << endl;
+  harry.set_priority(667);
+  cout << harry.get_priority() << endl;
+  
   return 0;
 }
