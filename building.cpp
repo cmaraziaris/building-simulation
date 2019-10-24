@@ -5,6 +5,7 @@
 // wste na mhn antigrafoume olh thn wra memory
 
 #include <iostream>
+#include <cstdio>
 
 using namespace std;
 
@@ -131,8 +132,24 @@ public:
 
 /* ============================= */
 
+
 int main(int argc, char const *argv[])
 {
+  if (argc != 7) {  /* Error check */
+    cerr << "\nUsage:\n" << argv[0] 
+    << " <max_cap> <floor_cap> <office_cap> <elevator_cap>" 
+    << " <number_of_visitors> <elevator_circles>\n" << endl;
+    exit(EXIT_FAILURE); 
+  }
+
+  int max_cap = atoi(argv[1]);
+  int cap_flr = atoi(argv[2]);
+  int cap_off = atoi(argv[3]);
+  int cap_elv = atoi(argv[4]);
+  int num_vst = atoi(argv[5]);
+  int l_circl = atoi(argv[6]);
+  
+  // test
   visitor harry(3,7);
   cout << harry.get_floor() << endl;
   cout << harry.get_office_num() << endl;
