@@ -14,12 +14,12 @@ visitor_list* list_insert (visitor* v,visitor_list* l) {
      } return n;
 }
 
-visitor_list* list_remove (visitor* v,visitor_list** l) {    // Return the node that needs to be deleted
+visitor* list_remove (visitor* v,visitor_list** l) {    // Return the node that needs to be deleted
     visitor_list* tmp=*l,*prev;
 
     if ((tmp)&&(tmp->member->priority==v->priority)) {
         *l=tmp->link;
-        return tmp;
+        return tmp->member;
     }
     while ((tmp)&&(tmp->member->priority!=v->priority)) {
         prev=tmp;
@@ -27,5 +27,5 @@ visitor_list* list_remove (visitor* v,visitor_list** l) {    // Return the node 
     }
     if (!tmp) return NULL;      // If there's no such node, return NULL
     prev->link=tmp->link;
-    return tmp;
+    return tmp->member;
 }
