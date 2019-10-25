@@ -42,7 +42,7 @@ int visitor::get_floor()     { return floor; }
 class waiting_room
 {
   int curr;
-  queue* visitors;  
+  queue<visitor*> visitors;  
 public:
   waiting_room(); // Waiting room does not have maximum capacity
   ~waiting_room();
@@ -54,11 +54,11 @@ public:
 int waiting_room::get_curr(){ return curr; }
 
 waiting_room::waiting_room() {
-  curr=0; visitors=NULL;
+  curr=0;
 }
 
 waiting_room::~waiting_room(){ 
-  delete visitors;
+  while (!visitors.empty()) visitors.pop();
   cout << "End of waiting people!\n";
 }
 
@@ -92,7 +92,7 @@ class office
   int number;
   int cap;
   int total; // total visitors, used to prioritize ppl (bank-style)
-  queue *visitors;
+  queue<visitor*> visitors;
 public:
   office(int No, int num);
   ~office();
@@ -104,13 +104,12 @@ public:
 office::office(int No, int num){
   cap    = No;
   number = num;
-  visitors = new queue;   // Shouldn't you make it NULL ?
   std::cout << "Office #" << number << "has been created" << endl;
 }
 
 office::~office(){ 
 //  visitors.destroy(); // ? prepei arage na to kserei to office? mallon i delete 8a kalesei ton destructor ths queue, not sure.
-  delete visitors;
+  while (!visitors.empty()) visitors.pop();
   std::cout << "End of the work!" << endl;
 }
 
@@ -118,17 +117,20 @@ int office::get_cap(){ return cap; }
 
 void office::enter(visitor *vst){
   ++total;
-  vst.set_priority(total); // TODO: test an 8a doulepsei xwris pointers ???
-  if (visitors.get_size() == cap)
+  vst->set_priority(total); // TODO: test an 8a doulepsei xwris pointers ???
+  if (visitors.size() == cap)
     std::cout << "Please, wait outside for entrance in the office. Your priority is: " << total << endl;
   else {
-    visitors.insert(vst);
+    visitors.push(vst);
     std::cout << "Entering office #" << number << endl;
   }
 } 
 
 visitor *office::exit(){ 
-  return visitors.remove();
+  visitor* vst=new visitor(visitors.front()->get_floor(),visitors.front()->get_office_num());     // Just copy all info to a new node before calling pop()
+  vst->set_priority(visitors.front()->get_priority());
+  visitors.pop();                                                     // Pop the element
+  return vst;                                                         // Return it
 }
 
 /* ============================= */
@@ -177,7 +179,7 @@ class elevator  //TODO: all of it
 {
   int cap;
   int curr;
-  queue* visitors;
+  queue<visitor*> visitors;
   void enter(visitor*);
   visitor* exit(visitor*);
   void stop_up();   //TODO: orismata
@@ -196,11 +198,10 @@ int elevator::get_curr(){ return curr; }
 
 elevator::elevator(int Nl) {
   cap=Nl; curr=0;
-  visitors=NULL;
 }
 
 elevator::~elevator() {
-  delete visitors;
+  while (!visitors.empty()) visitors.pop();
   cout<<"No more ups and downs!\n";
 }
 
