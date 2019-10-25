@@ -10,7 +10,8 @@
 
 using namespace std;
 
-/* ============================= */
+/* ============================= */ 
+/* I'm finished here [Harry] */
 class visitor
 {
   int floor;
@@ -18,7 +19,6 @@ class visitor
   int priority; 
 public:
   visitor(int fl, int off);
-  //~visitor();
   void set_priority(int);
   int get_priority();
   int get_office_num();
@@ -67,18 +67,56 @@ public:
 };
 
 /* ============================= */
+// Tsekare to
 class office
 {
-  int number;  //opt ? 
+  int number;
   int cap;
-  visitor* visitors;
+  int total; // total visitors, used to prioritize ppl (bank-style)
+  queue *visitors;
 public:
-  office(int No, int num); // num questionable
+  office(int No, int num);
   ~office();
-  void enter(visitor);
-  visitor exit(visitor);
-  int get_cap();
+  void enter(visitor *);
+  visitor *exit();
+  int get_cap(); // opt?
 };
+
+office::office(int No, int num){
+  cap    = No;
+  number = num;
+  visitors = new queue;
+  std::cout << "Office #" << number << "has been created" << endl;
+}
+
+office::~office(){ 
+//  visitors.destroy(); // ? prepei arage na to kserei to office? mallon i delete 8a kalesei ton destructor ths queue, not sure.
+  delete visitors;
+  std::cout << "End of the work!" << endl;
+}
+
+int office::get_cap(){ return cap; }
+
+void office::enter(visitor *vst){
+  ++total;
+  vst.set_priority(total); // TODO: test an 8a doulepsei xwris pointers ???
+  if (visitors.get_size() == cap)
+    std::cout << "Please, wait outside for entrance in the office. Your priority is: " << total << endl;
+  else {
+    visitors.insert(vst);
+    std::cout << "Entering office #" << number << endl;
+  }
+} 
+
+visitor *office::exit(){ 
+  return visitors.remove();
+}
+
+/* ============================= */
+// TODO!!! (Spyro ;]])
+//void queue.insert(visitor *);  // insert a visitor in the queue (sto telos)
+//int queue.get_size(); // return the valid-data nodes of the q
+//visitor *queue.remove(); //epistrefei deikth pros ton visitor pou teleiwse & afaire to 1o melos ths ouras
 
 /* ============================= */
 class floor
@@ -102,15 +140,15 @@ class elevator  //TODO: all of it
   int cap;
   int curr;
   visitor* visitors;
-public: // isws ola ektos apo operate prepei n mpoun private, dunno
-  elevator(int Nl);
-  ~elevator();
-  void operate();
   void enter(visitor);
   visitor exit(visitor);
   void stop_up();   //TODO: orismata
   void stop_down(); //TODO: orismata  
   void empty_all(); //TODO: orismata
+public: // [YES] isws ola ektos apo operate prepei n mpoun private, dunno
+  elevator(int Nl);
+  ~elevator();
+  void operate();
   int get_cap();
   int get_curr();
 };
