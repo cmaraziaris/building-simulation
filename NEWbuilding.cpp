@@ -48,11 +48,18 @@ public:
   ~waiting_room();
   void enter(visitor*);
   visitor* exit(); 
-  int get_cap();
   int get_curr();
 };
+
+int waiting_room::get_curr(){ return curr; }
+
 waiting_room::waiting_room() {
   curr=0; visitors=NULL;
+}
+
+waiting_room::~waiting_room(){ 
+  delete visitors;
+  cout << "End of waiting people!\n";
 }
 
 /* ============================= */
@@ -75,6 +82,10 @@ ground_level::ground_level (int Ng) {
   cout<<"The Entrance has been created!\n";
 }
 
+ground_level::~ground_level(){ 
+  delete wr;
+  cout << "End of service!\n";
+}
 /* ============================= */
 class office
 {
@@ -142,12 +153,24 @@ public:
   int get_curr();
 };
 
+int floor::get_cap(){ return cap; }
+int floor::get_curr(){ return curr; }
+
 floor::floor(int Nf,int No) {
   cap=Nf; curr=0;
   wr=new waiting_room;
   off=new office*[10];
   for (int i = 0; i < 10; i++) off[i]=new office(No,i);
 }
+
+floor::~floor() {
+  delete wr;
+  for (int i = 0; i < 4; i++)
+    delete off[i];
+  delete[] off;
+  cout<<"End of service!\n";
+}
+
 
 /* ============================= */
 class elevator  //TODO: all of it
@@ -168,9 +191,17 @@ public: // [YES] isws ola ektos apo operate prepei n mpoun private, dunno
   int get_curr();
 };
 
+int elevator::get_cap(){ return cap; }
+int elevator::get_curr(){ return curr; }
+
 elevator::elevator(int Nl) {
   cap=Nl; curr=0;
   visitors=NULL;
+}
+
+elevator::~elevator() {
+  delete visitors;
+  cout<<"No more ups and downs!\n";
 }
 
 /* ============================= */
@@ -200,6 +231,15 @@ building::building(int N, int Nf, int Ng, int No, int Nl) {
   }
   el=new elevator(Nl);
   cout<<"A lift has been created!\n";
+}
+
+building::~building() {
+  delete ground;
+  delete el;
+  for (int i = 0; i < 4; i++)
+    delete fl[i];
+  delete[] fl;
+  cout<<"Service not available any longer. Go elsewhere!\n";
 }
 
 /* ============================= */
