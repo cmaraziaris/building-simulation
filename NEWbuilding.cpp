@@ -12,7 +12,7 @@
 using namespace std;
 
 /* ============================= */ 
-/* I'm finished here [Harry] */
+/* [Harry] Finished class */
 class visitor
 {
   int floor;
@@ -127,18 +127,12 @@ void office::enter(visitor *vst){
 } 
 
 visitor *office::exit(){ 
-  visitor* vst=new visitor(visitors.front()->get_floor(),visitors.front()->get_office_num());     // Just copy all info to a new node before calling pop()
-  vst->set_priority(visitors.front()->get_priority());
+  //visitor* vst=new visitor(visitors.front()->get_floor(),visitors.front()->get_office_num());     // Just copy all info to a new node before calling pop()
+  //vst->set_priority(visitors.front()->get_priority());
+  visitor *vst = visitors.front(); // [Harry] Added this line
   visitors.pop();                                                     // Pop the element
   return vst;                                                         // Return it
 }
-
-/* ============================= */
-// TODO!!! (Spyro ;]])
-//void queue.insert(visitor *);  // insert a visitor in the queue (sto telos)
-//int queue.get_size(); // return the valid-data nodes of the q
-//visitor *queue.remove(); //epistrefei deikth pros ton visitor pou teleiwse & afaire to 1o melos ths ouras
-
 /* ============================= */
 class floor
 {
