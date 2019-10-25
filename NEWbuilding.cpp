@@ -149,8 +149,8 @@ class floor
 public:
   floor(int Nf,int No);  // To floor einai o monos tropos na ftia3eis grapheio epomenws pernas kai to No san orisma
   ~floor();
-  void enter(visitor);
-  visitor exit(visitor);
+  void enter(visitor *);
+  visitor *exit();
   int get_cap();
   int get_curr();
 };
@@ -181,7 +181,7 @@ class elevator  //TODO: all of it
   int curr;
   queue<visitor*> visitors;
   void enter(visitor*);
-  visitor* exit(visitor*);
+  visitor* exit();
   void stop_up();   //TODO: orismata
   void stop_down(); //TODO: orismata  
   void empty_all(); //TODO: orismata
@@ -215,9 +215,9 @@ class building
   elevator* el;
 public:
   building(int N, int Nf, int Ng, int No, int Nl);  // TODO : ftia3e kai 4 floors me mem allocation tou fl
-  ~building();
+  ~building();                                // [Harry]: den to exeis ftiaksei auto re bro? :thinking:
   void enter(visitor*);
-  void exit(visitor*);
+  void exit();
 };
 
 building::building(int N, int Nf, int Ng, int No, int Nl) {
