@@ -2,7 +2,7 @@
 
 //TODO: 1) exit/enter -> visitor trades
 //      2) Elevator
-
+// isws i enter prepei na ginei bool wste n kseroume an to enter itan successful
 // opt == optional
 
 #include <iostream>
@@ -104,19 +104,20 @@ public:
 office::office(int No, int num){
   cap    = No;
   number = num;
+  total  = 0;
   std::cout << "Office #" << number << "has been created" << endl;
 }
 
 office::~office(){ 
-  while (!visitors.empty()) visitors.pop(); //opt?
-  std::cout << "End of the work!" << endl;
+  while (!visitors.empty()) visitors.pop(); //[Harry] pretty sure that's optional
+  std::cout << "End of the work!" << endl;  //[Harry] will delete before finalisation
 }
 
 int office::get_cap(){ return cap; }
 
 void office::enter(visitor *vst){
   ++total;
-  vst->set_priority(total); // TODO: test an 8a doulepsei xwris pointers ???
+  vst->set_priority(total);
   if (visitors.size() == cap)
     std::cout << "Please, wait outside for entrance in the office. Your priority is: " << total << endl;
   else {
@@ -126,7 +127,7 @@ void office::enter(visitor *vst){
 } 
 
 visitor *office::exit(){ 
-  visitor *vst = visitors.front(); // will work? 
+  visitor *vst = visitors.front();
   visitors.pop();
   return vst;    
 }
@@ -147,11 +148,12 @@ public:
   int get_curr();
 };
 
-int floor::get_cap(){ return cap; }
+int floor::get_cap() { return cap; }
 int floor::get_curr(){ return curr; }
 
 floor::floor(int Nf,int No) {
-  cap=Nf; curr=0;
+  cap=Nf; 
+  curr=0;
   wr=new waiting_room;
   off=new office*[10];
   for (int i = 0; i < 10; i++) off[i]=new office(No,i);
@@ -273,9 +275,8 @@ int main(int argc, char const *argv[])
 
   for (int i = 0; i < num_vst; ++i)
     service->enter(ppl[i]);
-
-
   
+
   /* Cleanup section */
   delete service;
 
