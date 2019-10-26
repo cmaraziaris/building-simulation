@@ -87,6 +87,8 @@ ground_level::~ground_level(){
   cout << "End of service!\n";
 }
 /* ============================= */
+// TODO: 1) decide whether cap is needed
+//       2) decide how2communicate w/ waiting rooms
 class office
 {
   int number;
@@ -275,7 +277,7 @@ int main(int argc, char const *argv[])
 
   for (int i = 0; i < num_vst; ++i)
     service->enter(ppl[i]);
-  
+
 
   /* Cleanup section */
   delete service;
