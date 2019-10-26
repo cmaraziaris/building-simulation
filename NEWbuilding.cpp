@@ -159,7 +159,7 @@ floor::floor(int Nf,int No) {
 
 floor::~floor() {
   delete wr;
-  for (int i = 0; i < 4; i++)
+  for (int i = 0; i < 10; i++)
     delete off[i];
   delete[] off;
   cout<<"End of service!\n";
