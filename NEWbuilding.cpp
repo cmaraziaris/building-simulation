@@ -171,6 +171,7 @@ class elevator  //TODO: all of it
 {
   int cap;
   int curr;
+  int crcl_rem;   // circles remaining;
   queue<visitor*> visitors;
   void enter(visitor*);
   visitor* exit();
@@ -178,23 +179,25 @@ class elevator  //TODO: all of it
   void stop_down(); //TODO: orismata  
   void empty_all(); //TODO: orismata
 public:
-  elevator(int Nl);
+  elevator(int Nl, int lc);
   ~elevator();
   void operate();
   int get_cap();
   int get_curr();
 };
 
-int elevator::get_cap(){ return cap; }
+int elevator::get_cap() { return cap; }
 int elevator::get_curr(){ return curr; }
 
-elevator::elevator(int Nl) {
-  cap=Nl; curr=0;
+elevator::elevator(int Nl, int l_circl) {
+  cap  = Nl; 
+  curr = 0;
+  crcl_rem = l_circl;
 }
 
 elevator::~elevator() {
   while (!visitors.empty()) visitors.pop();
-  cout<<"No more ups and downs!\n";
+  cout << "No more ups and downs!\n";
 }
 
 /* ============================= */
@@ -206,13 +209,13 @@ class building
   floor** fl;  // Floor pointer (create floors dynamically during construction)
   elevator* el;
 public:
-  building(int N, int Nf, int Ng, int No, int Nl);  // TODO : ftia3e kai 4 floors me mem allocation tou fl
+  building(int N, int Nf, int Ng, int No, int Nl, int lc);  // TODO : ftia3e kai 4 floors me mem allocation tou fl
   ~building();                                // [Harry]: den to exeis ftiaksei auto re bro? :thinking:
   void enter(visitor*){};
   void exit();
 };
 
-building::building(int N, int Nf, int Ng, int No, int Nl) {
+building::building(int N, int Nf, int Ng, int No, int Nl, int l_circl) {
   cap=N; curr=0;
   cout<< "A new building is ready for serving citizens!\n\n";
   ground=new ground_level(Ng);
@@ -222,7 +225,7 @@ building::building(int N, int Nf, int Ng, int No, int Nl) {
     fl[i]=new floor(Nf,No);
     cout<<"A Floor has been created with number "<<i+1<<"!\n";
   }
-  el=new elevator(Nl);
+  el=new elevator(Nl, l_circl);
   cout<<"A lift has been created!\n";
 }
 
@@ -266,7 +269,7 @@ int main(int argc, char const *argv[])
   }
 
   /* Create a building, visitors attempt to enter */
-  building *service = new building(max_cap, cap_flr, cap_grd, cap_off, cap_elv);
+  building *service = new building(max_cap, cap_flr, cap_grd, cap_off, cap_elv, l_circl);
 
   for (int i = 0; i < num_vst; ++i)
     service->enter(ppl[i]);
