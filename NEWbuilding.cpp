@@ -126,12 +126,6 @@ void office::enter(visitor *vst){
   }
 } 
 
-visitor *office::exit(){ 
-  
-  visitor *vst = visitors.front(); 
-  visitors.pop();                             // Pop the element
-  return vst;                                 // Return it
-}
 /* ============================= */
 class floor
 {
