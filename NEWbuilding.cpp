@@ -1,8 +1,8 @@
 /* ! CPP PROGRAM == OBJECTS THAT SEND/RECEIVE MESSAGES ! */
 
-//TODO: trades visitors metaksy xwrwn ???
-// probz prepei oi exit na epistrefoun visitor*
-// wste na mhn antigrafoume olh thn wra memory
+//TODO: 1) exit/enter -> visitor trades
+//      2) MEMORY LEAKS (trexe valgrind)
+
 // opt == optional
 
 #include <iostream>
@@ -44,7 +44,7 @@ class waiting_room
   int curr;
   queue<visitor*> visitors;  
 public:
-  waiting_room(); // Waiting room does not have maximum capacity
+  waiting_room(); /* Waiting room does not have maximum capacity */
   ~waiting_room();
   void enter(visitor*);
   visitor* exit(); 
@@ -58,7 +58,7 @@ waiting_room::waiting_room() {
 }
 
 waiting_room::~waiting_room(){ 
-  while (!visitors.empty()) visitors.pop();
+  while (!visitors.empty()) visitors.pop(); // opt?
   cout << "End of waiting people!\n";
 }
 
@@ -72,7 +72,7 @@ public:
   ground_level(int Ng);
   ~ground_level();
   void enter(visitor*);
-  void exit(visitor*);  // Epistrefei void afou meta to ground level bgainei e3w 
+  void exit(visitor*);  //[Harry][Questionable argument] Epistrefei void afou meta to ground level bgainei e3w 
   void wait(visitor*); //metaferei ton visitor sto wr 
 };
 
@@ -108,8 +108,7 @@ office::office(int No, int num){
 }
 
 office::~office(){ 
-//  visitors.destroy(); // ? prepei arage na to kserei to office? mallon i delete 8a kalesei ton destructor ths queue, not sure.
-  while (!visitors.empty()) visitors.pop();
+  while (!visitors.empty()) visitors.pop(); //opt?
   std::cout << "End of the work!" << endl;
 }
 
@@ -127,11 +126,9 @@ void office::enter(visitor *vst){
 } 
 
 visitor *office::exit(){ 
-  //visitor* vst=new visitor(visitors.front()->get_floor(),visitors.front()->get_office_num());     // Just copy all info to a new node before calling pop()
-  //vst->set_priority(visitors.front()->get_priority());
-  visitor *vst = visitors.front(); // [Harry] Added this line
-  visitors.pop();                                                     // Pop the element
-  return vst;                                                         // Return it
+  visitor *vst = visitors.front(); // will work? 
+  visitors.pop();
+  return vst;    
 }
 /* ============================= */
 class floor
@@ -179,7 +176,7 @@ class elevator  //TODO: all of it
   void stop_up();   //TODO: orismata
   void stop_down(); //TODO: orismata  
   void empty_all(); //TODO: orismata
-public: // [YES] isws ola ektos apo operate prepei n mpoun private, dunno
+public:
   elevator(int Nl);
   ~elevator();
   void operate();
@@ -210,7 +207,7 @@ class building
 public:
   building(int N, int Nf, int Ng, int No, int Nl);  // TODO : ftia3e kai 4 floors me mem allocation tou fl
   ~building();                                // [Harry]: den to exeis ftiaksei auto re bro? :thinking:
-  void enter(visitor*);
+  void enter(visitor*){};
   void exit();
 };
 
@@ -222,18 +219,18 @@ building::building(int N, int Nf, int Ng, int No, int Nl) {
   fl=new floor*[4];
   for (int i = 0; i < 4; i++) {
     fl[i]=new floor(Nf,No);
-    cout<<"A Floor has been created with number "<<i<<"!\n";
+    cout<<"A Floor has been created with number "<<i+1<<"!\n";
   }
   el=new elevator(Nl);
   cout<<"A lift has been created!\n";
 }
 
 building::~building() {
-  delete ground;
   delete el;
   for (int i = 0; i < 4; i++)
     delete fl[i];
   delete[] fl;
+  delete ground;
   cout<<"Service not available any longer. Go elsewhere!\n";
 }
 
@@ -242,19 +239,20 @@ building::~building() {
 
 int main(int argc, char const *argv[])
 {
-  if (argc != 7) {  /* Error check */
-    cerr << "\nUsage:\n" << argv[0] 
-    << " <max_cap> <floor_cap> <office_cap> <elevator_cap>" 
+  if (argc != 8) {  /* Error check */
+    std::cerr << "\nUsage:\n" << argv[0] 
+    << " <max_cap> <floor_cap> <ground_cap> <office_cap> <elevator_cap>" 
     << " <number_of_visitors> <elevator_circles>\n" << endl;
     exit(EXIT_FAILURE); 
   }
 
   int max_cap = atoi(argv[1]);
   int cap_flr = atoi(argv[2]);
-  int cap_off = atoi(argv[3]);
-  int cap_elv = atoi(argv[4]);
-  int num_vst = atoi(argv[5]);
-  int l_circl = atoi(argv[6]);
+  int cap_grd = atoi(argv[3]);
+  int cap_off = atoi(argv[4]);
+  int cap_elv = atoi(argv[5]);
+  int num_vst = atoi(argv[6]);
+  int l_circl = atoi(argv[7]);
   
   /* Generate visitors required */
   srand(45);
@@ -266,17 +264,17 @@ int main(int argc, char const *argv[])
     ppl[i]  = new visitor(fl, off);
   }
 
-  // for (int i = 0; i < num_vst; ++i)
-  //   cout << "floor: " << ppl[i]->get_floor() << " office:" << ppl[i]->get_office_num() << endl;
+  /* Create a building, visitors attempt to enter */
+  building *service = new building(max_cap, cap_flr, cap_grd, cap_off, cap_elv);
 
-  // // test
-  // visitor harry(3, 7);
-  // cout << harry.get_floor() << endl;
-  // cout << harry.get_office_num() << endl;
-  // harry.set_priority(667);
-  // cout << harry.get_priority() << endl;
+  for (int i = 0; i < num_vst; ++i)
+    service->enter(ppl[i]);
+
+
   
   /* Cleanup section */
+  delete service;
+
   for (int i = 0; i < num_vst; ++i)
     delete ppl[i];
   delete[] ppl;
