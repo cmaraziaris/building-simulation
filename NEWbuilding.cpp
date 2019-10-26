@@ -125,6 +125,12 @@ void office::enter(visitor *vst){
   }
 } 
 
+visitor *office::exit(){ 
+  visitor *vst = visitors.front(); // will work? 
+  visitors.pop();
+  return vst;    
+}
+
 /* ============================= */
 class floor
 {
