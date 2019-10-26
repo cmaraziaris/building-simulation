@@ -1,7 +1,7 @@
 /* ! CPP PROGRAM == OBJECTS THAT SEND/RECEIVE MESSAGES ! */
 
 //TODO: 1) exit/enter -> visitor trades
-//      2) MEMORY LEAKS (trexe valgrind)
+//      2) Elevator
 
 // opt == optional
 
@@ -171,7 +171,7 @@ class elevator  //TODO: all of it
 {
   int cap;
   int curr;
-  int crcl_rem;   // circles remaining;
+  int crcl_rem;   // circles remaining // ousiastika termatizei th diadikasia
   queue<visitor*> visitors;
   void enter(visitor*);
   visitor* exit();
