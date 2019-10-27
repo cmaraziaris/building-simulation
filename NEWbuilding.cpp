@@ -5,6 +5,9 @@
 // isws i enter prepei na ginei bool wste n kseroume an to enter itan successful
 // opt == optional
 
+// [Spiros] Isws stis enter merikwn class na pername ws orismata alles classes
+// [Spiros] e.g sto enter tou elevator na pername to fl (floor**) etsi wste na exw prosvash stous orofous apo funcs tou elevator
+
 #include <iostream>
 #include <cstdio>
 #include <queue>
@@ -44,7 +47,7 @@ class waiting_room
   int curr;
   queue<visitor*> visitors;  
 public:
-  waiting_room(); /* Waiting room does not have maximum capacity */
+  waiting_room();                           /* Waiting room does not have maximum capacity */
   ~waiting_room();
   void enter(visitor*);
   visitor* exit(); 
@@ -84,27 +87,25 @@ class ground_level
 public:
   ground_level(int Ng);
   ~ground_level();
-  void enter(visitor*);
+  void enter(visitor*,elevator*);
   void exit(visitor*);  //[Harry][Questionable argument] Epistrefei void afou meta to ground level bgainei e3w 
-  void wait(visitor*); //metaferei ton visitor sto wr 
+  void wait(visitor*,elevator*); //metaferei ton visitor sto wr 
   int get_cap();
   int get_curr();
 };
 int ground_level::get_cap() { return cap; }
 int ground_level::get_curr(){ return curr; }
 
-void ground_level::enter(visitor* vst) {
+void ground_level::enter(visitor* vst,elevator* el) {
   curr++;
-  wait(vst);
+  wait(vst,el);
   return;
 }
 
-void ground_level::wait (visitor* vst) {
+void ground_level::wait (visitor* vst,elevator* el) {
   wr->enter(vst);
   return;
 }
-
-
 
 ground_level::ground_level (int Ng) {
   cap=Ng; curr=0;
@@ -206,16 +207,18 @@ floor::~floor() {
 class elevator  //TODO: all of it
 {
   int cap;
+  int curr_floor;
+  floor** fl;
   int curr;
   int crcl_rem;   // circles remaining // ousiastika termatizei th diadikasia
   queue<visitor*> visitors;
   void enter(visitor*);
   visitor* exit();
-  void stop_up();   //TODO: orismata
-  void stop_down(); //TODO: orismata  
-  void empty_all(); //TODO: orismata
-public:
-  elevator(int Nl, int lc);
+  void stop_up();   //TODO: orismata  // [Spiros] Orisma : (curr_floor++)%4 etsi wste na 3eroume ton orofo ka8e fora
+  void stop_down(); //TODO: orismata  //  -//-
+  void empty_all(); //TODO: orismata  // [Spiros] Orisma : void , Epistrofh : int (ousiastika 8a kanei delete olous tous  
+public:                          // satisfied visitors) kai epistrefei ton ari8mo ekeinwn pou e3uphreth8hkan gia na kaneis
+  elevator(int Nl, int lc);                                                   // builiding->current -= tosoi
   ~elevator();
   void operate();
   int get_cap();
@@ -228,7 +231,9 @@ int elevator::get_curr(){ return curr; }
 elevator::elevator(int Nl, int l_circl) {
   cap  = Nl; 
   curr = 0;
+  curr_floor=0;             // Initially , the floor is 0
   crcl_rem = l_circl;
+  fl=NULL;
 }
 
 elevator::~elevator() {
@@ -255,7 +260,7 @@ void building::enter (visitor* vst) {
   if ((curr<cap)&&(ground->get_curr()<ground->get_cap())) { // einai anagkaios nomizw o 2os elegxos , alla check it 
     curr++;
     cout<<"A new customer wants to go to floor "<<vst->get_floor()<<" and office "<<vst->get_office_num()<< endl;
-    ground->enter(vst);
+    ground->enter(vst,el);
   }
   else cout<<"Please, come tomorrow.\n";
   return;
