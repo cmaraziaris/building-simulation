@@ -81,27 +81,26 @@ class ground_level
   int cap;
   int curr;
   waiting_room* wr; // TODO: orismata gia init
+  //elevator *el; //[Harry] ADDED: so it will communicate w/ the elev, instead of args
 public:
   ground_level(int Ng);
   ~ground_level();
-  void enter(visitor*,elevator*);
+  void enter(visitor*);
   void exit(visitor*);  //[Harry][Questionable argument] Epistrefei void afou meta to ground level bgainei e3w 
-  void wait(visitor*,elevator*); //metaferei ton visitor sto wr 
+  void wait(visitor*); //metaferei ton visitor sto wr 
   int get_cap();
   int get_curr();
 };
 int ground_level::get_cap() { return cap; }
 int ground_level::get_curr(){ return curr; }
 
-void ground_level::enter(visitor* vst,elevator* el) {
+void ground_level::enter(visitor* vst) {  //[Harry] deleted additional arg; added @private
   curr++;
-  wait(vst,el);
-  return;
+  wait(vst);
 }
 
-void ground_level::wait (visitor* vst,elevator* el) {
+void ground_level::wait (visitor* vst) {//[Harry] deleted additional arg; added @private
   wr->enter(vst);
-  return;
 }
 
 ground_level::ground_level (int Ng) {
@@ -204,18 +203,18 @@ floor::~floor() {
 class elevator  //TODO: all of it
 {
   int cap;
-  int curr_floor;
+  int curr_fl;
   floor** fl;
   int curr;
   int crcl_rem;   // circles remaining // ousiastika termatizei th diadikasia
   queue<visitor*> visitors;
   void enter(visitor*);
   visitor* exit();
-  void stop_up();   //TODO: orismata  // [Spiros] Orisma : (curr_floor++)%4 etsi wste na 3eroume ton orofo ka8e fora
+  void stop_up();   //TODO: orismata  // [Spiros] Orisma : (curr_fl++)%4 etsi wste na 3eroume ton orofo ka8e fora
   void stop_down(); //TODO: orismata  //  -//-
   void empty_all(); //TODO: orismata  // [Spiros] Orisma : void , Epistrofh : int (ousiastika 8a kanei delete olous tous  
 public:                          // satisfied visitors) kai epistrefei ton ari8mo ekeinwn pou e3uphreth8hkan gia na kaneis
-  elevator(int Nl, int lc);                                                   // builiding->current -= tosoi
+  elevator(int Nl, int lc, floor **);    // builiding->current -= tosoi
   ~elevator();
   void operate();
   int get_cap();
@@ -225,16 +224,16 @@ public:                          // satisfied visitors) kai epistrefei ton ari8m
 int elevator::get_cap() { return cap; }
 int elevator::get_curr(){ return curr; }
 
-elevator::elevator(int Nl, int l_circl) {
+elevator::elevator(int Nl, int l_circl, floor **fl_arr) {
+  fl = fl_arr;
   cap  = Nl; 
   curr = 0;
-  curr_floor=0;             // Initially , the floor is 0
+  curr_fl  = 0;    // Initially , the floor is 0
   crcl_rem = l_circl;
-  fl=NULL;
 }
 
 elevator::~elevator() {
-  while (!visitors.empty()) visitors.pop();
+  while (!visitors.empty()) visitors.pop(); //opt
   cout << "No more ups and downs!\n";
 }
 
@@ -257,7 +256,7 @@ void building::enter (visitor* vst) {
   if ((curr<cap)&&(ground->get_curr()<ground->get_cap())) { // einai anagkaios nomizw o 2os elegxos , alla check it 
     curr++;
     cout<<"A new customer wants to go to floor "<<vst->get_floor()<<" and office "<<vst->get_office_num()<< endl;
-    ground->enter(vst,el);
+    ground->enter(vst); //[Harry] deleted "el" as additional arg
   }
   else cout<<"Please, come tomorrow.\n";
   return;
@@ -273,7 +272,7 @@ building::building(int N, int Nf, int Ng, int No, int Nl, int l_circl) {
     fl[i]=new floor(Nf,No);
     cout<<"A Floor has been created with number "<<i+1<<"!\n";
   }
-  el=new elevator(Nl, l_circl);
+  el=new elevator(Nl, l_circl, fl);
   cout<<"A lift has been created!\n";
 }
 
