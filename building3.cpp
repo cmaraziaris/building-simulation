@@ -80,13 +80,13 @@ class ground_level
 {
   int cap;
   int curr;
-  waiting_room* wr; // TODO: orismata gia init
-  building* bld;
-  elevator* el; //[Harry] ADDED: so it will communicate w/ the elev, instead of args
+  waiting_room* wr;
+  building* bld;  //[Harry] Questionable alla to kratame & vlepoume
+  elevator* el;
 public:
   ground_level(int Ng);
   ~ground_level();
-  void enter(visitor*);
+  void enter(visitor*); //[Harry] TODO: bool + capacity check 
   void exit(visitor*);  //[Harry][Questionable argument] Epistrefei void afou meta to ground level bgainei e3w 
   void wait(visitor*); //metaferei ton visitor sto wr 
   int get_cap();
@@ -95,12 +95,12 @@ public:
 int ground_level::get_cap() { return cap; }
 int ground_level::get_curr(){ return curr; }
 
-void ground_level::enter(visitor* vst) {  //[Harry] deleted additional arg; added @private
+void ground_level::enter(visitor* vst) {
   curr++;
   wait(vst);
 }
 
-void ground_level::wait (visitor* vst) {//[Harry] deleted additional arg; added @private
+void ground_level::wait (visitor* vst) {
   if (el->enter(vst))                   // [Spiros] An mpei sto elevator tote eimai ok
     cout<< "Visitor in the lift.\n";        
   else {
@@ -112,7 +112,7 @@ void ground_level::wait (visitor* vst) {//[Harry] deleted additional arg; added 
 ground_level::ground_level (int Ng,elevator* elev,building* bldg) {
   cap=Ng; curr=0;
   wr=new waiting_room;
-  bld=NULL;
+  bld=NULL; // [Harry] ??? 
   el=elev;
   bld=bldg;
   cout<<"The Entrance has been created!\n";
@@ -183,9 +183,9 @@ class floor
   elevator* el;
   office** off;
 public:
-  floor(int Nf,int No);  // To floor einai o monos tropos na ftia3eis grapheio epomenws pernas kai to No san orisma
+  floor(int Nf,int No);
   ~floor();
-  bool enter(visitor *);    // [Spiros] bool enter klassika 
+  bool enter(visitor *);    // [Spiros] bool enter klassika //[Harry] :heart_eyes:
   visitor *exit();
   int get_cap();
   int get_curr();
@@ -206,7 +206,7 @@ bool floor::enter(visitor* vst) {
     curr++;
     return true;
   }
-  else return false;
+  return false;
 }
 
 floor::floor(int Nf,int No,elevator* elv) {
@@ -255,12 +255,11 @@ bool elevator::enter(visitor* vst) {
     visitors.push(vst);
     curr++;
     return true;
-  } else {
-    return false;
   }
+  return false;
 }
 
-void elevator::exit(int flag) {
+void elevator::exit(int flag) { //[Harry] gt dn epistrefei visitor * ?
   if (flag) {                                     // flag>0 means elevator->floor
     if (fl[curr_fl]->enter(visitors.front())) {
       curr--;
@@ -306,7 +305,9 @@ public:
   void exit();
 };
 
-void building::enter (visitor* vst) {
+void building::enter (visitor* vst) { /* [Note][Harry] nmz oti prepei na kanoume bool thn ground.enter() wste na mhn ginetai 
+                                       *  o elegxos gia to ground apo thn building 
+                                       */
   if ((curr<cap)&&(ground->get_curr()<ground->get_cap())) { // einai anagkaios nomizw o 2os elegxos , alla check it 
     curr++;
     cout<<"A new customer wants to go to floor "<<vst->get_floor()<<" and office "<<vst->get_office_num()<< endl;
