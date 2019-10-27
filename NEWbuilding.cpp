@@ -5,9 +5,6 @@
 // isws i enter prepei na ginei bool wste n kseroume an to enter itan successful
 // opt == optional
 
-// [Spiros] Isws stis enter merikwn class na pername ws orismata alles classes
-// [Spiros] e.g sto enter tou elevator na pername to fl (floor**) etsi wste na exw prosvash stous orofous apo funcs tou elevator
-
 #include <iostream>
 #include <cstdio>
 #include <queue>
