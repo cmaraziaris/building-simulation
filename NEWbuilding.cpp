@@ -51,6 +51,19 @@ public:
   int get_curr();
 };
 
+void waiting_room::enter(visitor* vst) {
+  curr++;
+  visitors.push(vst);
+  return;
+}
+
+visitor* waiting_room::exit() {
+  visitor* vst=visitors.front();
+  visitors.pop();
+  curr--;
+  return vst;
+}
+
 int waiting_room::get_curr(){ return curr; }
 
 waiting_room::waiting_room() {
@@ -74,7 +87,24 @@ public:
   void enter(visitor*);
   void exit(visitor*);  //[Harry][Questionable argument] Epistrefei void afou meta to ground level bgainei e3w 
   void wait(visitor*); //metaferei ton visitor sto wr 
+  int get_cap();
+  int get_curr();
 };
+int ground_level::get_cap() { return cap; }
+int ground_level::get_curr(){ return curr; }
+
+void ground_level::enter(visitor* vst) {
+  curr++;
+  wait(vst);
+  return;
+}
+
+void ground_level::wait (visitor* vst) {
+  wr->enter(vst);
+  return;
+}
+
+
 
 ground_level::ground_level (int Ng) {
   cap=Ng; curr=0;
@@ -87,7 +117,7 @@ ground_level::~ground_level(){
   cout << "End of service!\n";
 }
 /* ============================= */
-// TODO: 1) decide whether cap is needed
+// TODO: 1) decide whether cap is needed 
 //       2) decide how2communicate w/ waiting rooms
 class office
 {
@@ -98,7 +128,7 @@ class office
 public:
   office(int No, int num);
   ~office();
-  void enter(visitor *);
+  bool enter(visitor *);
   visitor *exit();
   int get_cap(); // opt?
 };
@@ -117,14 +147,16 @@ office::~office(){
 
 int office::get_cap(){ return cap; }
 
-void office::enter(visitor *vst){
+bool office::enter(visitor *vst){
   ++total;
   vst->set_priority(total);
-  if (visitors.size() == cap)
+  if (visitors.size() == cap){
     std::cout << "Please, wait outside for entrance in the office. Your priority is: " << total << endl;
-  else {
+    return false;
+  } else {
     visitors.push(vst);
     std::cout << "Entering office #" << number << endl;
+    return true;
   }
 } 
 
@@ -213,11 +245,21 @@ class building
   floor** fl;  // Floor pointer (create floors dynamically during construction)
   elevator* el;
 public:
-  building(int N, int Nf, int Ng, int No, int Nl, int lc);  // TODO : ftia3e kai 4 floors me mem allocation tou fl
-  ~building();                                // [Harry]: den to exeis ftiaksei auto re bro? :thinking:
-  void enter(visitor*){};
+  building(int N, int Nf, int Ng, int No, int Nl, int lc);  
+  ~building();                                
+  void enter(visitor*);
   void exit();
 };
+
+void building::enter (visitor* vst) {
+  if ((curr<cap)&&(ground->get_curr()<ground->get_cap())) { // einai anagkaios nomizw o 2os elegxos , alla check it 
+    curr++;
+    cout<<"A new customer wants to go to floor "<<vst->get_floor()<<" and office "<<vst->get_office_num()<< endl;
+    ground->enter(vst);
+  }
+  else cout<<"Please, come tomorrow.\n";
+  return;
+}
 
 building::building(int N, int Nf, int Ng, int No, int Nl, int l_circl) {
   cap=N; curr=0;
