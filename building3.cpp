@@ -81,7 +81,8 @@ class ground_level
   int cap;
   int curr;
   waiting_room* wr; // TODO: orismata gia init
-  //elevator *el; //[Harry] ADDED: so it will communicate w/ the elev, instead of args
+  building* bld;
+  elevator* el; //[Harry] ADDED: so it will communicate w/ the elev, instead of args
 public:
   ground_level(int Ng);
   ~ground_level();
@@ -100,12 +101,20 @@ void ground_level::enter(visitor* vst) {  //[Harry] deleted additional arg; adde
 }
 
 void ground_level::wait (visitor* vst) {//[Harry] deleted additional arg; added @private
-  wr->enter(vst);
+  if (el->enter(vst))                   // [Spiros] An mpei sto elevator tote eimai ok
+    cout<< "Visitor in the lift.\n";        
+  else {
+    wr->enter(vst);                       // [Spiros] Alliws ton bazw sthn anamonh mexri --> thn epomenh gura tou elev <-- TODO 
+    cout << "You are not allowed to enter !\n"; 
+  } return;
 }
 
-ground_level::ground_level (int Ng) {
+ground_level::ground_level (int Ng,elevator* elev,building* bldg) {
   cap=Ng; curr=0;
   wr=new waiting_room;
+  bld=NULL;
+  el=elev;
+  bld=bldg;
   cout<<"The Entrance has been created!\n";
 }
 
@@ -121,19 +130,23 @@ class office
   int number;
   int cap;
   int total; // total visitors, used to prioritize ppl (bank-style)
+  floor** fl;
+  elevator* el;       // [Spiros] Mallon xreiazetai kai edw to elevator gt sto exit paei kateu8eian sto elev
   queue<visitor*> visitors;
 public:
   office(int No, int num);
   ~office();
   bool enter(visitor *);
-  visitor *exit();
+  void exit();
   int get_cap(); // opt?
 };
 
-office::office(int No, int num){
+office::office(int No, int num,floor** flr,elevator* elv){
   cap    = No;
   number = num;
   total  = 0;
+  fl=flr;
+  el=elv;
   std::cout << "Office #" << number << "has been created" << endl;
 }
 
@@ -157,10 +170,8 @@ bool office::enter(visitor *vst){
   }
 } 
 
-visitor *office::exit(){ 
-  visitor *vst = visitors.front();
-  visitors.pop();
-  return vst;    
+void office::exit(){ 
+ // Isws den kollaei h palia office exit
 }
 
 /* ============================= */
@@ -169,11 +180,12 @@ class floor
   int cap; //opt ? 
   int curr;//opt ?
   waiting_room* wr;
+  elevator* el;
   office** off;
 public:
   floor(int Nf,int No);  // To floor einai o monos tropos na ftia3eis grapheio epomenws pernas kai to No san orisma
   ~floor();
-  void enter(visitor *);
+  bool enter(visitor *);    // [Spiros] bool enter klassika 
   visitor *exit();
   int get_cap();
   int get_curr();
@@ -182,12 +194,28 @@ public:
 int floor::get_cap() { return cap; }
 int floor::get_curr(){ return curr; }
 
-floor::floor(int Nf,int No) {
+bool floor::enter(visitor* vst) {
+  
+  if (curr<cap) {                   // An xwraei ston orofo
+    if (off[vst->get_office_num()]->enter(vst)) {      // An xwraei sto grafeio
+      cout << "Entering office no. "<<vst->get_office_num()<<endl;
+  } else {
+      wr->enter(vst);
+      cout << "Sorry , office no. "<<vst->get_office_num()<<" is full.\n";
+    }
+    curr++;
+    return true;
+  }
+  else return false;
+}
+
+floor::floor(int Nf,int No,elevator* elv) {
   cap=Nf; 
   curr=0;
   wr=new waiting_room;
   off=new office*[10];
   for (int i = 0; i < 10; i++) off[i]=new office(No,i);
+  el=elv;
 }
 
 floor::~floor() {
@@ -205,11 +233,12 @@ class elevator  //TODO: all of it
   int cap;
   int curr_fl;
   floor** fl;
+  ground_level* grl;
   int curr;
   int crcl_rem;   // circles remaining // ousiastika termatizei th diadikasia
   queue<visitor*> visitors;
-  void enter(visitor*);
-  visitor* exit();
+  bool enter(visitor*);     // [Spiros] Added bool as a return type
+  void exit(int);   // [Spiros] Nomizw eimaste ok an epistrefei void // [Spiros] pairnei int giati exit kaneis kai pros to gr_lvl kai pros to floor opote einai san flag
   void stop_up();   //TODO: orismata  // [Spiros] Orisma : (curr_fl++)%4 etsi wste na 3eroume ton orofo ka8e fora
   void stop_down(); //TODO: orismata  //  -//-
   void empty_all(); //TODO: orismata  // [Spiros] Orisma : void , Epistrofh : int (ousiastika 8a kanei delete olous tous  
@@ -221,15 +250,40 @@ public:                          // satisfied visitors) kai epistrefei ton ari8m
   int get_curr();
 };
 
+bool elevator::enter(visitor* vst) {
+  if (curr<cap) {
+    visitors.push(vst);
+    curr++;
+    return true;
+  } else {
+    return false;
+  }
+}
+
+void elevator::exit(int flag) {
+  if (flag) {                                     // flag>0 means elevator->floor
+    if (fl[curr_fl]->enter(visitors.front())) {
+      curr--;
+      visitors.pop();
+      cout <<"Entering floor no. "<<curr_fl<<endl;
+    } else {
+      cout<<"Sorry , floor no. "<<curr_fl<<" is full.\n";
+    } return; 
+  } else {                                        // flag==0 means elevator->ground_level
+    // TODO 
+  }
+}
+
 int elevator::get_cap() { return cap; }
 int elevator::get_curr(){ return curr; }
 
-elevator::elevator(int Nl, int l_circl, floor **fl_arr) {
+elevator::elevator(int Nl, int l_circl, floor **fl_arr,ground_level* grlvl) {
   fl = fl_arr;
   cap  = Nl; 
   curr = 0;
   curr_fl  = 0;    // Initially , the floor is 0
   crcl_rem = l_circl;
+  grl=grlvl;
 }
 
 elevator::~elevator() {
@@ -331,3 +385,4 @@ int main(int argc, char const *argv[])
 
   return 0;
 }
+
