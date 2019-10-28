@@ -283,29 +283,33 @@ void elevator::exit(int flag) { //[Harry] gt dn epistrefei visitor * ?
 
  //[Harry] my stop_up implementation
 void elevator::stop_up(){
-  for (int i = 0; i < visitors.size(); ++i)
+  for (int cur_fl = 1; cur_fl <= 4; ++cur_fl)
   {
-    visitor *vst = visitors.front();
-    if (vst->get_floor() == curr_fl && fl[curr_fl-1]->enter(vst)) // if correct floor -> try to enter
-      visitors.pop();
+    for (int i = 0; i < visitors.size(); ++i)
+    {
+      visitor *vst = visitors.front();
+      if (vst->get_floor() == cur_fl && fl[cur_fl-1]->enter(vst)) // if correct floor -> try to enter
+        visitors.pop();
+    }
   }
-  ++curr_fl;  //aneva orofo
 }
 
 
 // randomly selects visitors from the offices and puts them in the elevator
 void elevator::stop_down(){
-  int to_select = cap - curr;
-  for (int sel = 0, i = 1; sel < to_select; ++sel)
+  for (int cur_fl = 4; cur_fl >= 1; --cur_fl)
   {
-    i = i % 10 + 1;
-    // ean to grafeio exei toul. 1 pelati, valton sto elev
-    if(fl[curr_fl-1]->get_office(i)->is_empty() == false){
-      visitors.push(fl[curr_fl-1]->get_office(i)->exit());
-      ++curr;
+    int to_select = cap - curr;
+    for (int sel = 0, i = 1; sel < to_select; ++sel)
+    {
+      i = i % 10 + 1;
+      // ean to grafeio exei toul. 1 pelati, valton sto elev
+      if(fl[curr_fl-1]->get_office(i)->is_empty() == false){
+        visitors.push(fl[curr_fl-1]->get_office(i)->exit());
+        ++curr;
+      }
     }
   }
-  --curr_fl;  //kateva orofo
 }
 
 // void elevator::stop(int floor_num) {
