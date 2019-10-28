@@ -137,7 +137,7 @@ public:
   office(int No, int num);
   ~office();
   bool enter(visitor *);
-  void exit();
+  visitor *exit();
   int get_cap(); // opt?
   bool is_empty();  //[Harry] used in elev::stop_down
 };
@@ -172,9 +172,11 @@ bool office::enter(visitor *vst){
     return true;
   }
 } 
-
-void office::exit(){ 
- // Isws den kollaei h palia office exit
+// [Harry] Resurrected this from the dead
+visitor *office::exit(){ 
+  visitor *vst = visitors.front();
+  visitors.pop();
+  return vst;  
 }
 
 /* ============================= */
