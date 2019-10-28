@@ -80,10 +80,10 @@ class ground_level
 {
   int cap;
   int curr;
-  waiting_room* wr;
   building* bld;  //[Harry] Questionable alla to kratame & vlepoume
   elevator* el;
 public:
+  waiting_room* wr;   // [Spiros] Des elevator line 291
   ground_level(int Ng);
   ~ground_level();
   void enter(visitor*); //[Harry] TODO: bool + capacity check 
@@ -101,12 +101,12 @@ void ground_level::enter(visitor* vst) {
 }
 
 void ground_level::wait (visitor* vst) {
-  if (el->enter(vst))                   // [Spiros] An mpei sto elevator tote eimai ok
-    cout<< "Visitor in the lift.\n";        
-  else {
+  // if (el->enter(vst))                   // [Spiros] An mpei sto elevator tote eimai ok
+  //   cout<< "Visitor in the lift.\n";        
+  // else {
     wr->enter(vst);                       // [Spiros] Alliws ton bazw sthn anamonh mexri --> thn epomenh gura tou elev <-- TODO 
-    cout << "You are not allowed to enter !\n"; 
-  } return;
+    //cout << "You are not allowed to enter !\n"; 
+  //} return;
 }
 
 ground_level::ground_level (int Ng,elevator* elev,building* bldg) {
@@ -239,9 +239,8 @@ class elevator  //TODO: all of it
   queue<visitor*> visitors;
   bool enter(visitor*);     // [Spiros] Added bool as a return type
   void exit(int);   // [Spiros] Nomizw eimaste ok an epistrefei void // [Spiros] pairnei int giati exit kaneis kai pros to gr_lvl kai pros to floor opote einai san flag
-  void stop_up();   //TODO: orismata  // [Spiros] Orisma : (curr_fl++)%4 etsi wste na 3eroume ton orofo ka8e fora
-  void stop_down(); //TODO: orismata  //  -//-
-  void empty_all(); //TODO: orismata  // [Spiros] Orisma : void , Epistrofh : int (ousiastika 8a kanei delete olous tous  
+  void stop(int);   //TODO: orismata  // [Spiros] Orisma : (curr_fl++) etsi wste na 3eroume ton orofo ka8e fora
+  int empty_all(); //TODO: orismata  // [Spiros] Orisma : void , Epistrofh : int (ousiastika 8a kanei delete olous tous  
 public:                          // satisfied visitors) kai epistrefei ton ari8mo ekeinwn pou e3uphreth8hkan gia na kaneis
   elevator(int Nl, int lc, floor **);    // builiding->current -= tosoi
   ~elevator();
@@ -273,6 +272,36 @@ void elevator::exit(int flag) { //[Harry] gt dn epistrefei visitor * ?
   }
 }
 
+void elevator::stop(int floor_num) {
+  
+  // Gia olous tous visitors sto elev pou 8eloun na mpoun sto sygkekrimeno orofo
+  if (fl[floor_num]->enter(/* Visitor pou 8elei na mpei */)) {
+    /* Delete him */
+    curr--;
+  }
+  // + na mpoun apo ta grafeia oi pelates
+}
+
+void elevator::operate() {
+  while (crcl_rem--) {
+    curr_fl=0;
+    enter(grl->exit(grl->wr->exit())); 
+    while (curr_fl < 4) {
+      stop(curr_fl++);
+      // code
+    }
+    curr_fl--;
+    while (curr_fl>=0) {
+      stop(curr_fl--);
+      //code
+    }
+    int vst_satisf=empty_all();  // [Spiros] Osoi Satisfied visitors bghkan , alloi tosoi 8a mpoun 
+    
+    for (int i = 0; i < vst_satisf; i++)
+      enter(grl->exit(grl->wr->exit()));      // [Spiros] Bgeite apo to waiting room tou isogeiou kai mpeite sto elevator
+  }                                           // [Spiros] Prepei na gnwrizw to waiting room mallon
+}
+
 int elevator::get_cap() { return cap; }
 int elevator::get_curr(){ return curr; }
 
@@ -297,8 +326,8 @@ class building
   int curr; /*  current ppl inside */
   ground_level* ground;
   floor** fl;  // Floor pointer (create floors dynamically during construction)
-  elevator* el;
 public:
+  elevator* el;   // [Spiros] Made it public in order to do stuff in main (operate)
   building(int N, int Nf, int Ng, int No, int Nl, int lc);  
   ~building();                                
   void enter(visitor*);
@@ -373,8 +402,10 @@ int main(int argc, char const *argv[])
   /* Create a building, visitors attempt to enter */
   building *service = new building(max_cap, cap_flr, cap_grd, cap_off, cap_elv, l_circl);
 
-  for (int i = 0; i < num_vst; ++i)
-    service->enter(ppl[i]);
+  for (int i = 0; i < num_vst; ++i) {
+    service->enter(ppl[i]);           // Get one person in (building->ground_level->waiting_room)
+    service->el->operate();           // Operate 
+  }
 
 
   /* Cleanup section */
