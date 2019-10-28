@@ -139,7 +139,10 @@ public:
   bool enter(visitor *);
   void exit();
   int get_cap(); // opt?
+  bool is_empty();  //[Harry] used in elev::stop_down
 };
+
+bool office::is_empty(){ return visitors.size() == 0 ? true : false; } //[Harry] TODO:check
 
 office::office(int No, int num,floor** flr,elevator* elv){
   cap    = No;
@@ -189,8 +192,10 @@ public:
   visitor *exit();
   int get_cap();
   int get_curr();
+  office *get_office(int office_n); //[Harry] added this one used on elevator::stop_down
 };
 
+office *floor::get_office(int off_n){ return off[off_n-1]; } //[Harry] args from 1-10
 int floor::get_cap() { return cap; }
 int floor::get_curr(){ return curr; }
 
@@ -239,8 +244,10 @@ class elevator  //TODO: all of it
   queue<visitor*> visitors;
   bool enter(visitor*);     // [Spiros] Added bool as a return type
   void exit(int);   // [Spiros] Nomizw eimaste ok an epistrefei void // [Spiros] pairnei int giati exit kaneis kai pros to gr_lvl kai pros to floor opote einai san flag
-  void stop(int);   //TODO: orismata  // [Spiros] Orisma : (curr_fl++) etsi wste na 3eroume ton orofo ka8e fora
+  //void stop(int);   //TODO: orismata  // [Spiros] Orisma : (curr_fl++) etsi wste na 3eroume ton orofo ka8e fora
   int empty_all(); //TODO: orismata  // [Spiros] Orisma : void , Epistrofh : int (ousiastika 8a kanei delete olous tous  
+  void stop_up();
+  void stop_down();
 public:                          // satisfied visitors) kai epistrefei ton ari8mo ekeinwn pou e3uphreth8hkan gia na kaneis
   elevator(int Nl, int lc, floor **);    // builiding->current -= tosoi
   ~elevator();
@@ -258,8 +265,10 @@ bool elevator::enter(visitor* vst) {
   return false;
 }
 
+enum location { Ground, Floor }; //[Harry] style points! //probz should include it in the class
+
 void elevator::exit(int flag) { //[Harry] gt dn epistrefei visitor * ?
-  if (flag) {                                     // flag>0 means elevator->floor
+  if (loc == Floor) {       // flag>0 means elevator->floor
     if (fl[curr_fl]->enter(visitors.front())) {
       curr--;
       visitors.pop();
@@ -267,20 +276,47 @@ void elevator::exit(int flag) { //[Harry] gt dn epistrefei visitor * ?
     } else {
       cout<<"Sorry , floor no. "<<curr_fl<<" is full.\n";
     } return; 
-  } else {                                        // flag==0 means elevator->ground_level
+  } else {      // flag==0 means elevator->ground_level
     // TODO 
   }
 }
 
-void elevator::stop(int floor_num) {
-  
-  // Gia olous tous visitors sto elev pou 8eloun na mpoun sto sygkekrimeno orofo
-  if (fl[floor_num]->enter(/* Visitor pou 8elei na mpei */)) {
-    /* Delete him */
-    curr--;
+ //[Harry] my stop_up implementation
+void elevator::stop_up(){
+  for (int i = 0; i < visitors.size(); ++i)
+  {
+    visitor *vst = visitors.front();
+    if (vst->get_floor() == curr_fl && fl[curr_fl-1]->enter(vst)) // if correct floor -> try to enter
+      visitors.pop();
   }
-  // + na mpoun apo ta grafeia oi pelates
+  ++curr_fl;  //aneva orofo
 }
+
+
+// randomly selects visitors from the offices and puts them in the elevator
+void elevator::stop_down(){
+  int to_select = cap - curr;
+  for (int sel = 0, i = 1; sel < to_select; ++sel)
+  {
+    i = i % 10 + 1;
+    // ean to grafeio exei toul. 1 pelati, valton sto elev
+    if(fl[curr_fl-1]->get_office(i)->is_empty() == false){
+      visitors.push(fl[curr_fl-1]->get_office(i)->exit());
+      ++curr;
+    }
+  }
+  --curr_fl;  //kateva orofo
+}
+
+// void elevator::stop(int floor_num) {
+  
+//   // Gia olous tous visitors sto elev pou 8eloun na mpoun sto sygkekrimeno orofo
+//   if (fl[floor_num]->enter(/* Visitor pou 8elei na mpei */)) {
+//     /* Delete him */
+//     curr--;
+//   }
+//   // + na mpoun apo ta grafeia oi pelates
+// }
 
 void elevator::operate() {
   while (crcl_rem--) {
