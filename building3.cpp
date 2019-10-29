@@ -2,6 +2,7 @@
 
 //TODO: 1) exit/enter -> visitor trades
 //      2) Elevator
+//      3) Na mpainoun sto ktirio panw apo 1 atoma th fora
 // isws i enter prepei na ginei bool wste n kseroume an to enter itan successful
 // opt == optional
 
