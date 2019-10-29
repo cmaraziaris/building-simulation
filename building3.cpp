@@ -18,6 +18,7 @@ class visitor
   int floor;
   int office_num;
   int priority; 
+  bool is_satisfied;
 public:
   visitor(int fl, int off);
   void set_priority(int);
@@ -29,6 +30,7 @@ public:
 visitor::visitor(int fl, int off){
   floor = fl;
   office_num = off;
+  is_satisfied=false;
 }
 
 void visitor::set_priority(int pr){ priority = pr; }
@@ -87,7 +89,7 @@ public:
   ground_level(int Ng);
   ~ground_level();
   void enter(visitor*); //[Harry] TODO: bool + capacity check 
-  void exit(visitor*);  //[Harry][Questionable argument] Epistrefei void afou meta to ground level bgainei e3w 
+  visitor* exit(visitor*); 
   void wait(visitor*); //metaferei ton visitor sto wr 
   int get_cap();
   int get_curr();
@@ -112,7 +114,6 @@ void ground_level::wait (visitor* vst) {
 ground_level::ground_level (int Ng,elevator* elev,building* bldg) {
   cap=Ng; curr=0;
   wr=new waiting_room;
-  bld=NULL; // [Harry] ??? 
   el=elev;
   bld=bldg;
   cout<<"The Entrance has been created!\n";
@@ -142,7 +143,7 @@ public:
   bool is_empty();  //[Harry] used in elev::stop_down
 };
 
-bool office::is_empty(){ return visitors.size() == 0 ? true : false; } //[Harry] TODO:check
+bool office::is_empty(){ return (visitors.size() == 0) ? true : false; } //[Harry] TODO:check
 
 office::office(int No, int num,floor** flr,elevator* elv){
   cap    = No;
@@ -172,9 +173,10 @@ bool office::enter(visitor *vst){
     return true;
   }
 } 
-// [Harry] Resurrected this from the dead
+// [Harry] Resurrected this from the dead  [Spiros] It'll soon return to Davy Jones' locker AGAIN :)
 visitor *office::exit(){ 
   visitor *vst = visitors.front();
+  vst->is_satisfied=true;
   visitors.pop();
   return vst;  
 }
@@ -247,11 +249,11 @@ class elevator  //TODO: all of it
   bool enter(visitor*);     // [Spiros] Added bool as a return type
   void exit(int);   // [Spiros] Nomizw eimaste ok an epistrefei void // [Spiros] pairnei int giati exit kaneis kai pros to gr_lvl kai pros to floor opote einai san flag
   //void stop(int);   //TODO: orismata  // [Spiros] Orisma : (curr_fl++) etsi wste na 3eroume ton orofo ka8e fora
-  int empty_all(); //TODO: orismata  // [Spiros] Orisma : void , Epistrofh : int (ousiastika 8a kanei delete olous tous  
+  void empty_all(); //TODO: orismata    // [Spiros] I think we're ok with void
   void stop_up();
   void stop_down();
-public:                          // satisfied visitors) kai epistrefei ton ari8mo ekeinwn pou e3uphreth8hkan gia na kaneis
-  elevator(int Nl, int lc, floor **);    // builiding->current -= tosoi
+public:                          
+  elevator(int Nl, int lc, floor **);    
   ~elevator();
   void operate();
   int get_cap();
@@ -269,15 +271,17 @@ bool elevator::enter(visitor* vst) {
 
 enum location { Ground, Floor }; //[Harry] style points! //probz should include it in the class
 
-void elevator::exit(int flag) { //[Harry] gt dn epistrefei visitor * ?
+visitor* elevator::exit(enum loc) { 
   if (loc == Floor) {       // flag>0 means elevator->floor
     if (fl[curr_fl]->enter(visitors.front())) {
       curr--;
+      visitor* vst=visitors.front();
       visitors.pop();
       cout <<"Entering floor no. "<<curr_fl<<endl;
+      return vst;
     } else {
       cout<<"Sorry , floor no. "<<curr_fl<<" is full.\n";
-    } return; 
+    } return NULL; 
   } else {      // flag==0 means elevator->ground_level
     // TODO 
   }
@@ -325,20 +329,28 @@ void elevator::stop_down(){
 //   // + na mpoun apo ta grafeia oi pelates
 // }
 
+void elevator::empty_all(void) {
+  
+  for (int i = 0; i < visitors.size() ; i++) {
+    visitor *vst = visitors.front();
+    if (!(vst->is_satisfied)) {
+      visitors.push(vst);  
+    } else 
+      grl->exit(exit(0));
+    
+    visitors.pop();
+  }
+}
+
 void elevator::operate() {
   while (crcl_rem--) {
-    curr_fl=0;
-    enter(grl->exit(grl->wr->exit())); 
-    while (curr_fl < 4) {
-      stop(curr_fl++);
-      // code
-    }
-    curr_fl--;
-    while (curr_fl>=0) {
-      stop(curr_fl--);
-      //code
-    }
-    int vst_satisf=empty_all();  // [Spiros] Osoi Satisfied visitors bghkan , alloi tosoi 8a mpoun 
+    
+    enter(grl->exit(grl->wr->exit())); //  As mpei enas pelaths
+    
+    stop_up();
+    stop_down();
+
+    empty_all();  // [Spiros] Osoi Satisfied visitors bghkan , alloi tosoi 8a mpoun 
     
     for (int i = 0; i < vst_satisf; i++)
       enter(grl->exit(grl->wr->exit()));      // [Spiros] Bgeite apo to waiting room tou isogeiou kai mpeite sto elevator
