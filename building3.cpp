@@ -249,7 +249,7 @@ class elevator  //TODO: all of it
   bool enter(visitor*);     // [Spiros] Added bool as a return type
   void exit(int);   // [Spiros] Nomizw eimaste ok an epistrefei void // [Spiros] pairnei int giati exit kaneis kai pros to gr_lvl kai pros to floor opote einai san flag
   //void stop(int);   //TODO: orismata  // [Spiros] Orisma : (curr_fl++) etsi wste na 3eroume ton orofo ka8e fora
-  void empty_all(); //TODO: orismata    // [Spiros] I think we're ok with void
+  int empty_all(); //TODO: orismata    // [Spiros] I think we're ok with int
   void stop_up();
   void stop_down();
 public:                          
@@ -329,17 +329,20 @@ void elevator::stop_down(){
 //   // + na mpoun apo ta grafeia oi pelates
 // }
 
-void elevator::empty_all(void) {
-  
+int elevator::empty_all(void) {
+  int counter=0;
   for (int i = 0; i < visitors.size() ; i++) {
     visitor *vst = visitors.front();
     if (!(vst->is_satisfied)) {
       visitors.push(vst);  
-    } else 
+    } else {
       grl->exit(exit(0));
+      counter++;
+    }
     
     visitors.pop();
   }
+  return counter;
 }
 
 void elevator::operate() {
@@ -350,9 +353,9 @@ void elevator::operate() {
     stop_up();
     stop_down();
 
-    empty_all();  // [Spiros] Osoi Satisfied visitors bghkan , alloi tosoi 8a mpoun 
+    int satsf_vst=empty_all();  // [Spiros] Osoi Satisfied visitors bghkan , alloi tosoi 8a mpoun 
     
-    for (int i = 0; i < vst_satisf; i++)
+    for (int i = 0; i < satsf_vst; i++)
       enter(grl->exit(grl->wr->exit()));      // [Spiros] Bgeite apo to waiting room tou isogeiou kai mpeite sto elevator
   }                                           // [Spiros] Prepei na gnwrizw to waiting room mallon
 }
