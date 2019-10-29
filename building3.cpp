@@ -290,8 +290,9 @@ void elevator::stop_up(){
     for (int i = 0; i < visitors.size(); ++i)
     {
       visitor *vst = visitors.front();
-      if (vst->get_floor() == cur_fl && fl[cur_fl-1]->enter(vst)) // if correct floor -> try to enter
-        visitors.pop();
+      if (!(vst->get_floor() == cur_fl && fl[cur_fl-1]->enter(vst))) // if correct floor -> try to enter
+        visitors.push(vst);
+      visitor.pop();
     }
   }
 }
