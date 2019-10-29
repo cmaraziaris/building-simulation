@@ -31,7 +31,7 @@ public:
 visitor::visitor(int fl, int off){
   floor = fl;
   office_num = off;
-  is_satisfied=false;
+  is_satisfied = false;
 }
 
 void visitor::set_priority(int pr){ priority = pr; }
@@ -42,12 +42,13 @@ int visitor::get_floor()     { return floor; }
 
 
 /* ============================= */
+/* [Harry] TODO: Check whether curr is needed (and we're done here) */
 class waiting_room
 {
   int curr;
   queue<visitor*> visitors;  
 public:
-  waiting_room();                           /* Waiting room does not have maximum capacity */
+  waiting_room();    /* Waiting room does not have maximum capacity */
   ~waiting_room();
   void enter(visitor*);
   visitor* exit(); 
@@ -70,14 +71,13 @@ visitor* waiting_room::exit() {
 int waiting_room::get_curr(){ return curr; }
 
 waiting_room::waiting_room() {
-  curr=0;
+  curr = 0;
 }
 
 waiting_room::~waiting_room(){ 
-  while (!visitors.empty()) visitors.pop(); // opt?
   cout << "End of waiting people!\n";
 }
-
+// CARE: mh metrame sto sum tous an8rwpous sto wr or smthg
 /* ============================= */
 class ground_level
 {
@@ -89,7 +89,7 @@ public:
   waiting_room* wr;   // [Spiros] Des elevator line 291
   ground_level(int Ng);
   ~ground_level();
-  void enter(visitor*); //[Harry] TODO: bool + capacity check 
+  bool enter(visitor*); //[Harry] TODO: bool + capacity check 
   visitor* exit(visitor*); 
   void wait(visitor*); //metaferei ton visitor sto wr 
   int get_cap();
@@ -98,11 +98,15 @@ public:
 int ground_level::get_cap() { return cap; }
 int ground_level::get_curr(){ return curr; }
 
-void ground_level::enter(visitor* vst) {
+bool ground_level::enter(visitor* vst) {
+  if (curr == cap)
+    return false;
   curr++;
   wait(vst);
+  return true;
 }
 
+/* [Harry] den katalavainw tpt apo ta comments alla dn mou paei h kardia na ta svisw. Kane mia ekka8arish otan mporeis x] */
 void ground_level::wait (visitor* vst) {
   // if (el->enter(vst))                   // [Spiros] An mpei sto elevator tote eimai ok
   //   cout<< "Visitor in the lift.\n";        
@@ -112,12 +116,18 @@ void ground_level::wait (visitor* vst) {
   //} return;
 }
 
+void ground_level::exit(visitor *vst){
+  --curr;
+  bld->exit(vst);
+}
+
 ground_level::ground_level (int Ng,elevator* elev,building* bldg) {
-  cap=Ng; curr=0;
-  wr=new waiting_room;
-  el=elev;
-  bld=bldg;
-  cout<<"The Entrance has been created!\n";
+  cap  = Ng; 
+  curr = 0;
+  wr  = new waiting_room;
+  el  = elev;
+  bld = bldg;
+  cout << "The Entrance has been created!\n";
 }
 
 ground_level::~ground_level(){ 
@@ -125,7 +135,7 @@ ground_level::~ground_level(){
   cout << "End of service!\n";
 }
 /* ============================= */
-// TODO: 1) decide whether cap is needed 
+// TODO: 1) decide whether cap is needed [Harry] idk why I put this here :wheelchair:
 //       2) decide how2communicate w/ waiting rooms
 class office
 {
@@ -185,6 +195,7 @@ visitor *office::exit(){
 /* ============================= */
 class floor
 {
+  int number; // [1,4]
   int cap; //opt ? 
   int curr;//opt ?
   waiting_room* wr;
@@ -206,16 +217,14 @@ int floor::get_curr(){ return curr; }
 
 bool floor::enter(visitor* vst) {
   
-  if (curr<cap) {                   // An xwraei ston orofo
-    if (off[vst->get_office_num()]->enter(vst)) {      // An xwraei sto grafeio
-      cout << "Entering office no. "<<vst->get_office_num()<<endl;
-  } else {
+  if (curr < cap) {
+    if (off[vst->get_office_num()]->enter(vst) == false)  // An [den] xwraei sto grafeio
       wr->enter(vst);
-      cout << "Sorry , office no. "<<vst->get_office_num()<<" is full.\n";
-    }
     curr++;
     return true;
   }
+  std::cout << "Sorry, floor number " << number << "is full." << endl;
+  std::cout << "Your priority is: "   << vst->get_priority()  << endl;
   return false;
 }
 
@@ -240,6 +249,7 @@ floor::~floor() {
 /* ============================= */
 class elevator  //TODO: all of it
 {
+  int total; // [Harry] used to prioritize ppl as usual
   int cap;
   int curr_fl;
   floor** fl;
@@ -248,9 +258,9 @@ class elevator  //TODO: all of it
   int crcl_rem;   // circles remaining // ousiastika termatizei th diadikasia
   queue<visitor*> visitors;
   bool enter(visitor*);     // [Spiros] Added bool as a return type
-  void exit(int);   // [Spiros] Nomizw eimaste ok an epistrefei void // [Spiros] pairnei int giati exit kaneis kai pros to gr_lvl kai pros to floor opote einai san flag
-  //void stop(int);   //TODO: orismata  // [Spiros] Orisma : (curr_fl++) etsi wste na 3eroume ton orofo ka8e fora
-  int empty_all(); //TODO: orismata    // [Spiros] I think we're ok with int
+  void exit(int);   // [Spiros] Nomizw eimaste ok an epistrefei void 
+ 
+  void empty_all(); /* //TODO: orismata    // [Spiros] I think we're ok with int // [Harry] No I don't think we are :innocent: */
   void stop_up();
   void stop_down();
 public:                          
@@ -261,34 +271,41 @@ public:
   int get_curr();
 };
 
+void elevator::operate() {
+  while (crcl_rem--) {
+    
+  /* [Harry] Kales idees genika, you paved the way for this, sorry pou sou esvisa ton kwdika :< */
+
+    while (curr <= cap && grl->wr->get_curr()){ // while not cap + has ppl w8ting
+      enter(grl->wr->exit()); // val'tous olous apo isogeio
+    }
+    
+    stop_up();
+    stop_down();
+    empty_all();
+  }
+}
+
 bool elevator::enter(visitor* vst) {
+  vst->set_priority(++total);
   if (curr<cap) {
     visitors.push(vst);
     curr++;
+    std::cout << "Visitor in the lift!" << endl;
     return true;
   }
+  std::cout << "You are not allowed to enter!\n" << "Your priority is: " 
+            << vst->get_priority() << endl; 
   return false;
 }
 
-enum location { Ground, Floor }; //[Harry] style points! //probz should include it in the class
 
-visitor* elevator::exit(enum loc) { 
-  if (loc == Floor) {       // flag>0 means elevator->floor
-    if (fl[curr_fl]->enter(visitors.front())) {
-      curr--;
-      visitor* vst=visitors.front();
-      visitors.pop();
-      cout <<"Entering floor no. "<<curr_fl<<endl;
-      return vst;
-    } else {
-      cout<<"Sorry , floor no. "<<curr_fl<<" is full.\n";
-    } return NULL; 
-  } else {      // flag==0 means elevator->ground_level
-    // TODO 
-  }
+void elevator::exit(visitor *vst) {
+  --curr;
+  grl->exit(vst);
 }
 
- //[Harry] my stop_up implementation
+
 void elevator::stop_up(){
   for (int cur_fl = 1; cur_fl <= 4; ++cur_fl)
   {
@@ -320,54 +337,28 @@ void elevator::stop_down(){
   }
 }
 
-// void elevator::stop(int floor_num) {
-  
-//   // Gia olous tous visitors sto elev pou 8eloun na mpoun sto sygkekrimeno orofo
-//   if (fl[floor_num]->enter(/* Visitor pou 8elei na mpei */)) {
-//     /* Delete him */
-//     curr--;
-//   }
-//   // + na mpoun apo ta grafeia oi pelates
-// }
-
-int elevator::empty_all(void) {
-  int counter=0;
-  for (int i = 0; i < visitors.size() ; i++) {
+// calls elevator::exit on every satisfied client inside the lift
+void elevator::empty_all() {
+  for (int i = 0; i < visitors.size() ; i++) 
+  {
     visitor *vst = visitors.front();
-    if (!(vst->is_satisfied)) {
+    if (!(vst->is_satisfied))
       visitors.push(vst);  
-    } else {
-      grl->exit(exit(0));
-      counter++;
-    }
+    else
+      exit(vst);
     
     visitors.pop();
   }
-  return counter;
-}
-
-void elevator::operate() {
-  while (crcl_rem--) {
-    
-    enter(grl->exit(grl->wr->exit())); //  As mpei enas pelaths
-    
-    stop_up();
-    stop_down();
-
-    int satsf_vst=empty_all();  // [Spiros] Osoi Satisfied visitors bghkan , alloi tosoi 8a mpoun 
-    
-    for (int i = 0; i < satsf_vst; i++)
-      enter(grl->exit(grl->wr->exit()));      // [Spiros] Bgeite apo to waiting room tou isogeiou kai mpeite sto elevator
-  }                                           // [Spiros] Prepei na gnwrizw to waiting room mallon
 }
 
 int elevator::get_cap() { return cap; }
 int elevator::get_curr(){ return curr; }
 
 elevator::elevator(int Nl, int l_circl, floor **fl_arr,ground_level* grlvl) {
-  fl = fl_arr;
-  cap  = Nl; 
-  curr = 0;
+  fl  = fl_arr;
+  cap = Nl; 
+  curr  = 0;
+  total = 0;
   curr_fl  = 0;    // Initially , the floor is 0
   crcl_rem = l_circl;
   grl=grlvl;
@@ -379,34 +370,42 @@ elevator::~elevator() {
 }
 
 /* ============================= */
+//TODO: 1) check whether el is needed
+//      2) it's ready (?)
 class building
 {
   int cap;  /* capacity */
   int curr; /*  current ppl inside */
-  ground_level* ground;
+  ground_level* gr_lvl;
   floor** fl;  // Floor pointer (create floors dynamically during construction)
 public:
-  elevator* el;   // [Spiros] Made it public in order to do stuff in main (operate)
+  elevator* el;  //[Harry] ?? // [Spiros] Made it public in order to do stuff in main (operate)
   building(int N, int Nf, int Ng, int No, int Nl, int lc);  
   ~building();                                
-  void enter(visitor*);
-  void exit();
+  void enter(visitor *);
+  void exit(visitor *);
 };
 
-void building::enter (visitor* vst) { /* [Note][Harry] nmz oti prepei na kanoume bool thn ground.enter() wste na mhn ginetai 
-                                       *  o elegxos gia to ground apo thn building 
-                                       */
-  if ((curr<cap)&&(ground->get_curr()<ground->get_cap())) { // einai anagkaios nomizw o 2os elegxos , alla check it 
+void building::enter (visitor* vst) {
+  if ((curr == cap) || gr_lvl->enter(vst) == false)
+    std::cout << "Please, come tomorrow." << endl;
+  else {
     curr++;
-    cout<<"A new customer wants to go to floor "<<vst->get_floor()<<" and office "<<vst->get_office_num()<< endl;
-    ground->enter(vst); //[Harry] deleted "el" as additional arg
+    cout << "A new customer wants to go to floor " << vst->get_floor()
+         << " and office " << vst->get_office_num() << endl; //debug printf
   }
-  else cout<<"Please, come tomorrow.\n";
-  return;
+}
+
+void building::exit(visitor *vst){
+  --curr;
+  std::cout << "\"OOF, I FINALLY FINISHED! BEST DAY EVER!\"  -" 
+            << "FL: " << vst->get_floor() << "OF: " << vst->get_office_num()
+            << "PR: " << vst->get_priority() << endl; //debug printf
 }
 
 building::building(int N, int Nf, int Ng, int No, int Nl, int l_circl) {
-  cap=N; curr=0;
+  cap=N; 
+  curr=0;
   cout<< "A new building is ready for serving citizens!\n\n";
   ground=new ground_level(Ng);
   cout<< "A Floor has been created with number 0!\n";
