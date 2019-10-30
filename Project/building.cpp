@@ -92,7 +92,7 @@ office::office(int No, int num){
   total  = 0;
 //   fl=flr;
 //   el=elv;
-  std::cout << "Office #" << number << "has been created" << endl;
+  std::cout << "Office #" << number << " has been created" << endl;
 }
 
 office::~office(){ 
@@ -126,8 +126,6 @@ visitor *office::exit(){
 /* ============================================||  F L O O R   F U N C T I O N S  ||============================================ */ 
 // TODO: na knme kati gia tous ppl sto waiting room pou prepei n mpoun sto office
 
-office** floor::get_off(void) { return off; }
-
 waiting_room* floor::get_wr(void) { return wr; }
 
 office *floor::get_office(int off_n){ return off[off_n-1]; } //[Harry] args from 1-10
@@ -139,7 +137,7 @@ int floor::get_curr(){ return curr; }
 bool floor::enter(visitor* vst) {
   
   if (curr < cap) {
-    if (off[vst->get_office_num()]->enter(vst) == false)  // An [den] xwraei sto grafeio
+    if (get_office(vst->get_office_num())->enter(vst) == false)  // An [den] xwraei sto grafeio
       wr->enter(vst);
     curr++;
     return true;
@@ -166,7 +164,7 @@ floor::floor(int Nf,int No) {
   curr=0;
   wr=new waiting_room;
   off=new office*[10];
-  for (int i = 0; i < 10; i++) off[i]=new office(No,i);
+  for (int i = 0; i < 10; i++) off[i]=new office(No,i+1);
   //el=elv;
 }
 
@@ -201,8 +199,8 @@ void elevator::stop_up(){
     for (int i = 0, max = fl[cur_fl-1]->get_wr()->get_vst().size(); i < max; ++i)
     {
       visitor *vst = fl[cur_fl-1]->get_wr()->exit();
-      office **off =fl[cur_fl-1]->get_off();
-      if (off[vst->get_office_num()]->enter(vst) == false) // if they get rejected
+      office *off =fl[cur_fl-1]->get_office(vst->get_office_num());
+      if (off->enter(vst) == false) // if they get rejected
         fl[cur_fl-1]->get_wr()->enter(vst);
     }
 
