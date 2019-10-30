@@ -12,6 +12,15 @@
 
 using namespace std;
 
+/* Declarations */
+class visitor;
+class waiting_room;
+class floor;
+class office;
+class ground_level;
+class building;
+class elevator;
+
 /* ============================= */ 
 /* [Harry] Finished class */
 class visitor
@@ -26,6 +35,8 @@ public:
   int get_priority();
   int get_office_num();
   int get_floor();
+  void set_satisfaction(bool);
+  bool get_satisfaction(); 
 };
 
 visitor::visitor(int fl, int off){
@@ -34,7 +45,10 @@ visitor::visitor(int fl, int off){
   is_satisfied = false;
 }
 
+void visitor::set_satisfaction(bool sat) { is_satisfied = sat; }
 void visitor::set_priority(int pr){ priority = pr; }
+
+bool visitor::get_satisfaction() { return is_satisfied; }
 
 int visitor::get_priority()  { return priority; }
 int visitor::get_office_num(){ return office_num; }
@@ -90,7 +104,7 @@ public:
   ground_level(int Ng);
   ~ground_level();
   bool enter(visitor*); //[Harry] TODO: bool + capacity check 
-  visitor* exit(visitor*); 
+  void exit(visitor*); 
   void wait(visitor*); //metaferei ton visitor sto wr 
   int get_cap();
   int get_curr();
