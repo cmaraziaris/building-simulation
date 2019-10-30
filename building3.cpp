@@ -193,6 +193,7 @@ visitor *office::exit(){
 }
 
 /* ============================= */
+// TODO: na knme kati gia tous ppl sto waiting room pou prepei n mpoun sto office
 class floor
 {
   int number; // [1,4]
@@ -227,6 +228,19 @@ bool floor::enter(visitor* vst) {
   std::cout << "Your priority is: "   << vst->get_priority()  << endl;
   return false;
 }
+
+// Randomly chooses and returns a person from an office
+// Please care about an empty floor
+visitor *floor::exit(){
+  --curr;
+  while(1){
+    int i = rand() % 10 + 1;
+    if(fl[curr_fl-1]->get_office(i)->is_empty() == false){
+      return fl[curr_fl-1]->get_office(i)->exit();
+    }
+  }
+}
+
 
 floor::floor(int Nf,int No,elevator* elv) {
   cap=Nf; 
@@ -271,13 +285,48 @@ public:
   int get_curr();
 };
 
+// selects visitors ready2leave from the floor and puts them in the elevator
+void elevator::stop_down(){
+  for (int fl_num = 4; fl_num >= 1; --fl_num)
+  {
+    int sel = cap - curr;
+    for (int i = 0; i < sel && fl[curr_fl-1]->get_curr() > 0; ++i)
+    {
+      ++curr;
+      visitors.push(fl[curr_fl-1]->exit());
+    }
+  }
+}
+// [Harry] my comments, no use using the tag on this 1
+void elevator::stop_up(){
+  for (int cur_fl = 1; cur_fl <= 4; ++cur_fl)
+  {
+    // this is done so that ppl avoid being stuck eternally in the wr
+    for (int i = 0; i < fl[cur_fl-1]->wr->visitors.size(); ++i) // meh meh metavliti syn8iki termatismou // should be slow but still work
+    {
+      visitor *vst = wr->exit();
+      if (fl[cur_fl-1]->off[vst->get_office_num()]->enter(vst) == false) // if they get rejected
+        fl[cur_fl-1]->wr->enter(vst);
+    }
+
+    for (int i = 0; i < visitors.size(); ++i) //!!care: metavliti syn8iki
+    {
+      visitor *vst = visitors.front();
+      // makes no sense. should add wr check first
+      if (!(vst->get_floor() == cur_fl && fl[cur_fl-1]->enter(vst))) // if correct floor -> try to enter
+        visitors.push(vst);
+      visitor.pop();
+    }
+  }
+}
+
 void elevator::operate() {
   while (crcl_rem--) {
     
-  /* [Harry] Kales idees genika, you paved the way for this, sorry pou sou esvisa ton kwdika :< */
+  /* [Harry] Kales idees genika, you paved the way for this, sorry pou sou esvisa kwdika :< */
 
     while (curr <= cap && grl->wr->get_curr()){ // while not cap + has ppl w8ting
-      enter(grl->wr->exit()); // val'tous olous apo isogeio
+      enter(grl->wr->exit()); // val'tous olous apo isogeio //TODO: this, but on floorz
     }
     
     stop_up();
@@ -306,36 +355,6 @@ void elevator::exit(visitor *vst) {
 }
 
 
-void elevator::stop_up(){
-  for (int cur_fl = 1; cur_fl <= 4; ++cur_fl)
-  {
-    for (int i = 0; i < visitors.size(); ++i)
-    {
-      visitor *vst = visitors.front();
-      if (!(vst->get_floor() == cur_fl && fl[cur_fl-1]->enter(vst))) // if correct floor -> try to enter
-        visitors.push(vst);
-      visitor.pop();
-    }
-  }
-}
-
-
-// randomly selects visitors from the offices and puts them in the elevator
-void elevator::stop_down(){
-  for (int cur_fl = 4; cur_fl >= 1; --cur_fl)
-  {
-    int to_select = cap - curr;
-    for (int sel = 0, i = 1; sel < to_select; ++sel)
-    {
-      i = i % 10 + 1;
-      // ean to grafeio exei toul. 1 pelati, valton sto elev
-      if(fl[curr_fl-1]->get_office(i)->is_empty() == false){
-        visitors.push(fl[curr_fl-1]->get_office(i)->exit());
-        ++curr;
-      }
-    }
-  }
-}
 
 // calls elevator::exit on every satisfied client inside the lift
 void elevator::empty_all() {
