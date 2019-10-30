@@ -28,8 +28,9 @@ class visitor
   int floor;
   int office_num;
   int priority; 
+  bool is_satisfied;
 public:
-  bool is_satisfied;        // I think we're ok with this being public (mou kanei error o compiler an to exw private gt apaiteitai access apo to elevator)
+          // I think we're ok with this being public (mou kanei error o compiler an to exw private gt apaiteitai access apo to elevator)  //[Harry] no
   visitor(int fl, int off);
   void set_priority(int);
   int get_priority();
@@ -98,10 +99,10 @@ class ground_level
   int cap;
   int curr;
   building* bld;  //[Harry] Questionable alla to kratame & vlepoume   // [Spiros] Looks like to kratame telika
-  elevator* el;
+//  elevator* el; // [Harry] if bugs, enable this
   waiting_room* wr;
 public:
-  ground_level(int Ng);
+  ground_level(int Ng, building *);
   ~ground_level();
   bool enter(visitor*); //[Harry] TODO: bool + capacity check 
   void exit(visitor*); 
@@ -131,11 +132,11 @@ void ground_level::exit(visitor *vst){
   bld->exit(vst);
 }
 
-ground_level::ground_level (int Ng,elevator* elev,building* bldg) {
+ground_level::ground_level (int Ng, building* bldg) {
   cap  = Ng; 
   curr = 0;
   wr  = new waiting_room;
-  el  = elev;
+//  el  = elev;
   bld = bldg;
   cout << "The Entrance has been created!\n";
 }
@@ -197,7 +198,7 @@ bool office::enter(visitor *vst){
 // [Harry] Resurrected this from the dead  [Spiros] It'll soon return to Davy Jones' locker AGAIN :)
 visitor *office::exit(){ 
   visitor *vst = visitors.front();
-  vst->is_satisfied=true;
+  vst->set_satisfaction(true);
   visitors.pop();
   return vst;  
 }
@@ -210,7 +211,7 @@ class floor
   int cap; //opt ? 
   int curr;//opt ?
   waiting_room* wr;
-  elevator* el;
+  //elevator* el;
   office** off;
 public:
   floor(int Nf,int No);
@@ -262,7 +263,7 @@ floor::floor(int Nf,int No,elevator* elv) {
   wr=new waiting_room;
   off=new office*[10];
   for (int i = 0; i < 10; i++) off[i]=new office(No,i);
-  el=elv;
+  //el=elv;
 }
 
 floor::~floor() {
@@ -275,7 +276,7 @@ floor::~floor() {
 
 
 /* ============================= */
-class elevator  //TODO: all of it
+class elevator
 {
   int total; // [Harry] used to prioritize ppl as usual
   int cap;
@@ -319,7 +320,7 @@ void elevator::stop_up(){
     {
       visitor *vst = wr->exit();
       office **off =fl[cur_fl-1]->get_off();
-      if (off[vst->get_office_num()]->enter(vst) == false) // if they get rejected // [Spiros] Please check this
+      if (off[vst->get_office_num()]->enter(vst) == false) // if they get rejected
         fl[cur_fl-1]->get_wr()->enter(vst);
     }
 
@@ -327,7 +328,6 @@ void elevator::stop_up(){
     for (int i = 0, max = visitors.size(); i < max; ++i)
     {
       visitor *vst = visitors.front();
-      // makes no sense. should add wr check first
       if (!(vst->get_floor() == cur_fl && fl[cur_fl-1]->enter(vst))) // if correct floor -> try to enter
         visitors.push(vst);
       visitors.pop();
@@ -338,7 +338,7 @@ void elevator::stop_up(){
 void elevator::operate() {
   while (crcl_rem--) {
     while (curr <= cap && grl->get_wr()->get_curr()){ // while not cap + has ppl w8ting
-      enter(grl->get_wr()->exit()); // val'tous olous apo isogeio //TODO: this, but on floorz
+      enter(grl->get_wr()->exit()); // val'tous olous apo isogeio
     }
     
     stop_up();
@@ -373,7 +373,7 @@ void elevator::empty_all() {
   for (int i = 0; i < visitors.size() ; i++) 
   {
     visitor *vst = visitors.front();
-    if (!(vst->is_satisfied))
+    if (vst->get_satisfaction() == false)
       visitors.push(vst);  
     else
       exit(vst);
@@ -442,7 +442,7 @@ building::building(int N, int Nf, int Ng, int No, int Nl, int l_circl) {
   cap=N; 
   curr=0;
   cout<< "A new building is ready for serving citizens!\n\n";
-  gr_lvl=new ground_level(Ng);
+  gr_lvl=new ground_level(Ng, this);
   cout<< "A Floor has been created with number 0!\n";
   fl=new floor*[4];
   for (int i = 0; i < 4; i++) {
@@ -495,12 +495,10 @@ int main(int argc, char const *argv[])
   /* Create a building, visitors attempt to enter */
   building *service = new building(max_cap, cap_flr, cap_grd, cap_off, cap_elv, l_circl);
 
-  for (int j,i = 0; i < num_vst; ++i) {
-    for (j = 0; j < cap_grd - service->get_gr_lvl()->get_curr(); j++)    // Get in the building as many people as they can fit in ground floor
-      service->enter(ppl[j]);           // Get people in (building->ground_level->waiting_room)
-    i=j-1;
-    service->get_elevator()->operate();           // Operate 
-  }
+  for (int i = 0; i < num_vst; ++i)
+    service->enter(ppl[i]);           // Get EVERY person in (building->ground_level->waiting_room)
+
+  service->el->operate();           // Operate 
 
 
   /* Cleanup section */
