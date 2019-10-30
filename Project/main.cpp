@@ -1,5 +1,6 @@
 #include <iostream>
 #include <cstdio>
+#include <ctime>
 #include "classes.h"
 
 int main(int argc, char const *argv[])
@@ -20,12 +21,12 @@ int main(int argc, char const *argv[])
   int l_circl = atoi(argv[7]);
   
   /* Generate visitors required */
-  srand(45);
+  srand(time(0));
   visitor **ppl = new visitor *[num_vst];
   for (int i = 0; i < num_vst; ++i)
   {
     int fl  = rand() % 4  + 1;  // opt: den exei kalh diaspora
-    int off = rand() % 11 + 1; 
+    int off = rand() % 10 + 1; 
     ppl[i]  = new visitor(fl, off);
   }
 
