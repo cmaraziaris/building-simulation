@@ -95,7 +95,6 @@ public:
   visitor *exit();
   int get_cap();
   int get_curr();
-  office** get_off();
   waiting_room* get_wr();
   office *get_office(int office_n); //[Harry] added this one used on elevator::stop_down
 };
