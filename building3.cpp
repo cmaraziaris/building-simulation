@@ -302,14 +302,15 @@ void elevator::stop_up(){
   for (int cur_fl = 1; cur_fl <= 4; ++cur_fl)
   {
     // this is done so that ppl avoid being stuck eternally in the wr
-    for (int i = 0; i < fl[cur_fl-1]->wr->visitors.size(); ++i) // meh meh metavliti syn8iki termatismou // should be slow but still work
+    for (int i = 0, max = fl[cur_fl-1]->wr->visitors.size(); i < max; ++i)
     {
       visitor *vst = wr->exit();
       if (fl[cur_fl-1]->off[vst->get_office_num()]->enter(vst) == false) // if they get rejected
         fl[cur_fl-1]->wr->enter(vst);
     }
 
-    for (int i = 0; i < visitors.size(); ++i) //!!care: metavliti syn8iki
+
+    for (int i = 0, max = visitors.size(); i < max; ++i)
     {
       visitor *vst = visitors.front();
       // makes no sense. should add wr check first
