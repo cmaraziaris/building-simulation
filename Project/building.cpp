@@ -292,16 +292,16 @@ void building::enter (visitor* vst) {
     std::cout << "Please, come tomorrow." << endl;
   else {
     curr++;
-    std::cout << "A new customer wants to go to floor " << vst->get_floor()
-         << " and office " << vst->get_office_num() << endl; //debug printf
+    std::cout << "A new customer wants to go to Floor " << vst->get_floor()
+         << " and Office " << vst->get_office_num() << endl; 
   }
 }
 
 void building::exit(visitor *vst){
   --curr;
   std::cout << "\"OOF, I FINALLY FINISHED! BEST DAY EVER!\"  -" 
-            << "FL: " << vst->get_floor() << "OF: " << vst->get_office_num()
-            << "PR: " << vst->get_priority() << endl; //debug printf
+            << "FL: " << vst->get_floor() << "  OF: " << vst->get_office_num()
+            << "  PR: " << vst->get_priority() << endl;
 }
 
 building::building(int N, int Nf, int Ng, int No, int Nl, int l_circl) {
