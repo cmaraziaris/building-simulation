@@ -1,7 +1,8 @@
 #include <iostream>
 #include <cstdio>
-#include <ctime>
+#include <chrono>
 #include "classes.h"
+#include <random>
 
 int main(int argc, char const *argv[])
 {
@@ -21,12 +22,14 @@ int main(int argc, char const *argv[])
   int l_circl = atoi(argv[7]);
   
   /* Generate visitors required */
-  srand(time(0));
+  mt19937 randomGen(chrono::steady_clock::now().time_since_epoch().count());      //   Waaaay better than rand()
+  uniform_int_distribution<int> rnd4(1,4),rnd10(1,10);
+
   visitor **ppl = new visitor *[num_vst];
   for (int i = 0; i < num_vst; ++i)
   {
-    int fl  = rand() % 4  + 1;  // opt: den exei kalh diaspora
-    int off = rand() % 10 + 1; 
+    int fl  = rnd4(randomGen); 
+    int off = rnd10(randomGen); 
     ppl[i]  = new visitor(fl, off);
   }
 
@@ -37,7 +40,6 @@ int main(int argc, char const *argv[])
     service->enter(ppl[i]);           // Get EVERY person in (building->ground_level->waiting_room)
 
   service->get_elevator()->operate();           // Operate 
-
 
   /* Cleanup section */
   delete service;
