@@ -149,11 +149,11 @@ bool floor::enter(visitor* vst) {
 
 // Randomly chooses and returns a person from an office
 // Please care about an empty floor
-visitor *floor::exit(){
+visitor *floor::exit() {
   --curr;
   while(1){
     int i = rand() % 10 + 1;
-    if( get_office(i)->is_empty() == false ){
+    if( get_office(i)->is_empty() == false ) {
       return get_office(i)->exit();
     }
   }
@@ -184,10 +184,10 @@ void elevator::stop_down(){
   {
     std::cout<<"Going down to floor "<<fl_num<<endl;
     int sel = cap - curr;
-    for (int i = 0; i < sel && fl[curr_fl-1]->get_curr() > 0; ++i)
+    for (int i = 0; i < sel && fl[fl_num-1]->get_curr() > 0; ++i)
     {
       ++curr;
-      visitors.push(fl[curr_fl-1]->exit());
+      visitors.push(fl[fl_num-1]->exit());
     }
   }
 }
@@ -212,6 +212,7 @@ void elevator::stop_up() {
       if (!(vst->get_floor() == cur_fl && fl[cur_fl-1]->enter(vst))) // if correct floor -> try to enter
         visitors.push(vst);
       visitors.pop();
+      curr--;
     }
   }
 }
@@ -253,7 +254,7 @@ void elevator::empty_all() {
     visitor *vst = visitors.front();
     if (vst->get_satisfaction() == false)
       visitors.push(vst);  
-    else
+    else 
       exit(vst);
     
     visitors.pop();
