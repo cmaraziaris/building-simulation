@@ -209,23 +209,26 @@ void elevator::stop_up() {
     for (int i = 0, max = visitors.size(); i < max; ++i)
     {
       visitor *vst = visitors.front();
-      if (!(vst->get_floor() == cur_fl && fl[cur_fl-1]->enter(vst))) // if correct floor -> try to enter
+      if (!(vst->get_floor() == cur_fl && fl[cur_fl-1]->enter(vst)))   // if correct floor -> try to enter
         visitors.push(vst);
+      else  curr--;
       visitors.pop();
-      curr--;
     }
   }
 }
 
 void elevator::operate() {
   while (crcl_rem--) {
-    while (curr <= cap && grl->get_wr()->get_curr()){ // while not cap + has ppl w8ting
-      enter(grl->get_wr()->exit()); // val'tous olous apo isogeio
+    while (curr < cap && grl->get_wr()->get_curr()){ // while not cap + has ppl w8ting
+      visitor* vst=grl->get_wr()->exit();
+      if(!enter(vst))                             // val'tous olous apo isogeio
+        grl->get_wr()->enter(vst);                  // Stin periptwsh pou den mpei sto asanser, 3anavalton mesa sto grl 
     }
     
     stop_up();
     stop_down();
     empty_all();
+    cout<<visitors.size()<<"\n\n"<<endl;
   }
 }
 
@@ -250,7 +253,7 @@ void elevator::exit(visitor *vst) {
 // calls elevator::exit on every satisfied client inside the lift
 void elevator::empty_all() {
   for (int i = 0; i < visitors.size() ; i++) 
-  {
+  { 
     visitor *vst = visitors.front();
     if (vst->get_satisfaction() == false)
       visitors.push(vst);  
