@@ -182,6 +182,7 @@ floor::~floor() {
 void elevator::stop_down(){
   for (int fl_num = 4; fl_num >= 1; --fl_num)
   {
+    std::cout<<"Going down to floor "<<fl_num<<endl;
     int sel = cap - curr;
     for (int i = 0; i < sel && fl[curr_fl-1]->get_curr() > 0; ++i)
     {
@@ -192,9 +193,10 @@ void elevator::stop_down(){
 }
 
 // [Harry] my comments, no use using the tag on this 1
-void elevator::stop_up(){
+void elevator::stop_up() {
   for (int cur_fl = 1; cur_fl <= 4; ++cur_fl)
   {
+    std::cout<<"Going up to floor "<<cur_fl<<endl;
     // this is done so that ppl avoid being stuck eternally in the wr
     for (int i = 0, max = fl[cur_fl-1]->get_wr()->get_vst().size(); i < max; ++i)
     {
