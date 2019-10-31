@@ -222,13 +222,12 @@ void elevator::operate() {
     while (curr < cap && grl->get_wr()->get_curr()){ // while not cap + has ppl w8ting
       visitor* vst=grl->get_wr()->exit();
       if(!enter(vst))                             // val'tous olous apo isogeio
-        grl->get_wr()->enter(vst);                  // Stin periptwsh pou den mpei sto asanser, 3anavalton mesa sto grl 
-    }
+        grl->get_wr()->enter(vst);                // Stin periptwsh pou den mpei sto asanser, 3anavalton mesa sto grl 
+    }                                               
     
     stop_up();
     stop_down();
     empty_all();
-    cout<<visitors.size()<<"\n\n"<<endl;
   }
 }
 
