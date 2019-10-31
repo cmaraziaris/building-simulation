@@ -84,7 +84,7 @@ public:
   ~office();
   bool enter(visitor *);
   visitor *exit();
-  int get_cap(); // opt?
+  int get_cap();
   bool is_empty();  //[Harry] used in elev::stop_down
 };
 
@@ -93,8 +93,8 @@ public:
 class floor
 {
   int number; // [1,4]
-  int cap; //opt ? 
-  int curr;//opt ?
+  int cap; 
+  int curr;
   waiting_room* wr;
   office** off;
 public:

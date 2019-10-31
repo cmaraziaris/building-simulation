@@ -54,7 +54,7 @@ int ground_level::get_cap() { return cap; }
 int ground_level::get_curr() { return curr; }
 
 bool ground_level::enter(visitor* vst) {
-  if (curr == cap)
+  if (get_curr() == get_cap())
     return false;
   curr++;
   wait(vst);
@@ -102,7 +102,7 @@ int office::get_cap(){ return cap; }
 bool office::enter(visitor *vst){
   ++total;
   vst->set_priority(total);
-  if (visitors.size() == cap){
+  if (visitors.size() == get_cap()){
     std::cout << "Please, wait outside for entrance in the office. Your priority is: " << total << endl;
     return false;
   } else {
@@ -130,8 +130,7 @@ int floor::get_cap() { return cap; }
 int floor::get_curr(){ return curr; }
 
 bool floor::enter(visitor* vst) {
-  
-  if (curr < cap) {
+  if (get_curr() < get_cap()) {
     if (get_office(vst->get_office_num())->enter(vst) == false)  // An [den] xwraei sto grafeio
       wr->enter(vst);
     curr++;
@@ -178,7 +177,7 @@ void elevator::stop_down(){
   for (int fl_num = 4; fl_num >= 1; --fl_num)
   {
     std::cout<<"Going down to floor "<<fl_num<<endl;
-    int sel = cap - curr;
+    int sel = get_cap() - get_curr();
     for (int i = 0; i < sel && fl[fl_num-1]->get_curr() > 0; ++i)
     {
       ++curr;
@@ -214,7 +213,7 @@ void elevator::stop_up() {
 
 void elevator::operate() {
   while (crcl_rem--) {
-    while (curr < cap && grl->get_wr()->get_curr()){ // while not cap + has ppl w8ting
+    while (get_curr() < get_cap() && grl->get_wr()->get_curr()){ // while not cap + has ppl w8ting
       visitor* vst=grl->get_wr()->exit();
       if(!enter(vst))                             // val'tous olous apo isogeio
         grl->get_wr()->enter(vst);                // Stin periptwsh pou den mpei sto asanser, 3anavalton mesa sto grl 
@@ -228,7 +227,7 @@ void elevator::operate() {
 
 bool elevator::enter(visitor* vst) {
   vst->set_priority(++total);
-  if (curr<cap) {
+  if (get_curr() < get_cap()) {
     visitors.push(vst);
     curr++;
     std::cout << "Visitor in the lift!" << endl;
