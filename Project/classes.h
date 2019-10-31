@@ -59,7 +59,6 @@ class ground_level
   int cap;
   int curr;
   building* bld;  
-//  elevator* el; // [Harry] if bugs, enable this
   waiting_room* wr;
 public:
   ground_level(int Ng, building *);
@@ -78,9 +77,7 @@ class office
 {
   int number;
   int cap;
-  int total; // total visitors, used to prioritize ppl (bank-style)
-//   floor** fl;
-//   elevator* el;       
+  int total; // total visitors, used to prioritize ppl (bank-style)       
   queue<visitor*> visitors;
 public:
   office(int No, int num);
@@ -99,7 +96,6 @@ class floor
   int cap; //opt ? 
   int curr;//opt ?
   waiting_room* wr;
-  //elevator* el;
   office** off;
 public:
   floor(int Nf,int No);

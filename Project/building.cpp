@@ -72,7 +72,6 @@ ground_level::ground_level (int Ng, building* bldg) {
   cap  = Ng; 
   curr = 0;
   wr  = new waiting_room;
-//  el  = elev;
   bld = bldg;
   std::cout << "The Entrance has been created!\n";
 }
@@ -90,8 +89,6 @@ office::office(int No, int num){
   cap    = No;
   number = num;
   total  = 0;
-//   fl=flr;
-//   el=elv;
   std::cout << "Office #" << number << " has been created" << endl;
 }
 
@@ -115,7 +112,6 @@ bool office::enter(visitor *vst){
   }
 } 
 
-// [Harry] Resurrected this from the dead  [Spiros] It'll soon return to Davy Jones' locker AGAIN :)
 visitor *office::exit(){ 
   visitor *vst = visitors.front();
   vst->set_satisfaction(true);
@@ -124,7 +120,6 @@ visitor *office::exit(){
 }
 
 /* ============================================||  F L O O R   F U N C T I O N S  ||============================================ */ 
-// TODO: na knme kati gia tous ppl sto waiting room pou prepei n mpoun sto office
 
 waiting_room* floor::get_wr(void) { return wr; }
 
@@ -283,7 +278,6 @@ elevator::~elevator() {
 }
 
 /* ============================================||  B U I L D I N G   F U N C T I O N S  ||============================================ */ 
-//TODO: 1) check whether el is needed  // An einai na kaloume thn operate apo thn main tote nomizw nai
 
 ground_level* building::get_gr_lvl(void) { return gr_lvl; }
 
