@@ -1,3 +1,7 @@
+/* ___________________________________________________________________________________________________________________________________________ */
+/* ===========================================================||  C L A S S E S  ||=========================================================== */
+/* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
+
 #pragma once
 
 #include <iostream>
@@ -14,8 +18,9 @@ class office;
 class ground_level;
 class building;
 class elevator;
- 
-/* =========================||  C L A S S E S  ||========================= */
+
+/* ===========================================================||  V I S I T O R  ||=========================================================== */
+
 class visitor 
 {
   int floor;
@@ -32,6 +37,8 @@ public:
   bool get_satisfaction(); 
 };
 
+/* ===========================================================||  W A I T I N G    R O O M  ||=========================================================== */
+
 class waiting_room
 {
   int curr;
@@ -45,17 +52,19 @@ public:
   queue<visitor*> get_vst();
 };
 
+/* ===========================================================||  G R O U N D   L E V E L  ||=========================================================== */
+
 class ground_level
 {
   int cap;
   int curr;
-  building* bld;  //[Harry] Questionable alla to kratame & vlepoume   // [Spiros] Looks like to kratame telika
+  building* bld;  
 //  elevator* el; // [Harry] if bugs, enable this
   waiting_room* wr;
 public:
   ground_level(int Ng, building *);
   ~ground_level();
-  bool enter(visitor*); //[Harry] TODO: bool + capacity check 
+  bool enter(visitor*); 
   void exit(visitor*); 
   void wait(visitor*); //metaferei ton visitor sto wr 
   int get_cap();
@@ -63,13 +72,15 @@ public:
   waiting_room* get_wr();
 };
 
+/* ===========================================================||  O F F I C E  ||=========================================================== */
+
 class office
 {
   int number;
   int cap;
   int total; // total visitors, used to prioritize ppl (bank-style)
 //   floor** fl;
-//   elevator* el;       // [Spiros] Mallon xreiazetai kai edw to elevator gt sto exit paei kateu8eian sto elev
+//   elevator* el;       
   queue<visitor*> visitors;
 public:
   office(int No, int num);
@@ -79,6 +90,8 @@ public:
   int get_cap(); // opt?
   bool is_empty();  //[Harry] used in elev::stop_down
 };
+
+/* ===========================================================||  F L O O R  ||=========================================================== */
 
 class floor
 {
@@ -91,13 +104,15 @@ class floor
 public:
   floor(int Nf,int No);
   ~floor();
-  bool enter(visitor *);    // [Spiros] bool enter klassika //[Harry] :heart_eyes:
+  bool enter(visitor *);    
   visitor *exit();
   int get_cap();
   int get_curr();
   waiting_room* get_wr();
   office *get_office(int office_n); //[Harry] added this one used on elevator::stop_down
 };
+
+/* ===========================================================||  E L E V A T O R  ||=========================================================== */
 
 class elevator
 {
@@ -121,6 +136,8 @@ public:
   int get_cap();
   int get_curr();
 };
+
+/* ===========================================================||  B U I L D I N G  ||=========================================================== */
 
 class building
 {
