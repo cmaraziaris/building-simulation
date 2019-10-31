@@ -6,6 +6,7 @@ The ground floor consists of an entrance area.
 Each floor consists of an entrance hall and ten offices.
 
 ## Usage
+#### Run
 
 ```cplusplus
 cd Project
@@ -14,6 +15,13 @@ make
 
 ./building_sim <max_cap> <floor_cap> <ground_cap> <office_cap> <elevator_cap> <number_of_visitors> <elevator_circles> 
 ```
+#### Clean
+
+```cplusplus
+make clean
+```
+## Contributor
+[Spiros Chalkias.](https://github.com/spChalk)
 
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)
