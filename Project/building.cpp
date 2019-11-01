@@ -14,11 +14,11 @@ void visitor::set_priority(int pr) { priority = pr; }
 
 bool visitor::get_satisfaction() { return is_satisfied; }
 
-int visitor::get_priority() { return priority; }
+unsigned int visitor::get_priority() { return priority; }
 
-int visitor::get_office_num() { return office_num; }
+short visitor::get_office_num() { return office_num; }
 
-int visitor::get_floor()  { return floor; }
+short visitor::get_floor()  { return floor; }
 
 /* ============================================||  W A I T I N G    R O O M    F U N C T I O N S  ||============================================ */ 
 
@@ -36,7 +36,7 @@ visitor* waiting_room::exit() {
 
 queue<visitor*> waiting_room::get_vst(void) { return visitors; }
 
-int waiting_room::get_curr() { return curr; }
+unsigned int waiting_room::get_curr() { return curr; }
 
 waiting_room::waiting_room() { curr = 0; }
 
@@ -47,9 +47,9 @@ waiting_room::~waiting_room() {  std::cout << "End of waiting people!\n"; }
 
 waiting_room* ground_level::get_wr(void) { return wr; }
 
-int ground_level::get_cap() { return cap; }
+unsigned int ground_level::get_cap() { return cap; }
 
-int ground_level::get_curr() { return curr; }
+unsigned int ground_level::get_curr() { return curr; }
 
 bool ground_level::enter(visitor* vst) {
   if (get_curr() == get_cap())
@@ -95,7 +95,7 @@ office::~office() {
   std::cout << "End of the work!" << endl;  //[Harry] will delete before finalisation
 }
 
-int office::get_cap(){ return cap; }
+unsigned int office::get_cap(){ return cap; }
 
 bool office::enter(visitor *vst) {
   ++total;
@@ -123,9 +123,9 @@ waiting_room* floor::get_wr(void) { return wr; }
 
 office *floor::get_office(int off_n){ return off[off_n-1]; } //[Harry] args from 1-10
 
-int floor::get_cap() { return cap; }
+unsigned int floor::get_cap() { return cap; }
 
-int floor::get_curr() { return curr; }
+unsigned int floor::get_curr() { return curr; }
 
 bool floor::enter(visitor* vst) {
   if (get_curr() < get_cap()) {
@@ -253,9 +253,9 @@ void elevator::empty_all() {
   }
 }
 
-int elevator::get_cap() { return cap; }
+unsigned int elevator::get_cap() { return cap; }
 
-int elevator::get_curr() { return curr; }
+unsigned int elevator::get_curr() { return curr; }
 
 elevator::elevator(int Nl, int l_circl, floor **fl_arr,ground_level* grlvl) {
   fl  = fl_arr;
