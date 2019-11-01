@@ -40,9 +40,7 @@ int waiting_room::get_curr() { return curr; }
 
 waiting_room::waiting_room() { curr = 0; }
 
-waiting_room::~waiting_room() { 
-  std::cout << "End of waiting people!\n";
-}
+waiting_room::~waiting_room() {  std::cout << "End of waiting people!\n"; }
 
 /* ============================================||  G R O U N D   L E V E L   F U N C T I O N S  ||============================================ */ 
 // CARE: mh metrame sto sum tous an8rwpous sto wr or smthg
@@ -85,21 +83,21 @@ ground_level::~ground_level(){
 
 bool office::is_empty(){ return (visitors.size() == 0) ? true : false; } 
 
-office::office(int No, int num){
+office::office(int No, int num) {
   cap    = No;
   number = num;
   total  = 0;
   std::cout << "Office #" << number << " has been created" << endl;
 }
 
-office::~office(){ 
+office::~office() { 
   while (!visitors.empty()) visitors.pop(); //[Harry] pretty sure that's optional
   std::cout << "End of the work!" << endl;  //[Harry] will delete before finalisation
 }
 
 int office::get_cap(){ return cap; }
 
-bool office::enter(visitor *vst){
+bool office::enter(visitor *vst) {
   ++total;
   vst->set_priority(total);
   if (visitors.size() == get_cap()){
@@ -112,7 +110,7 @@ bool office::enter(visitor *vst){
   }
 } 
 
-visitor *office::exit(){ 
+visitor *office::exit() { 
   visitor *vst = visitors.front();
   vst->set_satisfaction(true);
   visitors.pop();
@@ -127,7 +125,7 @@ office *floor::get_office(int off_n){ return off[off_n-1]; } //[Harry] args from
 
 int floor::get_cap() { return cap; }
 
-int floor::get_curr(){ return curr; }
+int floor::get_curr() { return curr; }
 
 bool floor::enter(visitor* vst) {
   if (get_curr() < get_cap()) {
@@ -159,7 +157,6 @@ floor::floor(int Nf,int No) {
   wr=new waiting_room;
   off=new office*[10];
   for (int i = 0; i < 10; i++) off[i]=new office(No,i+1);
-  //el=elv;
 }
 
 floor::~floor() {
@@ -173,7 +170,7 @@ floor::~floor() {
 /* ============================================||  E L E V A T O R   F U N C T I O N S  ||============================================ */ 
 
 // selects visitors ready2leave from the floor and puts them in the elevator
-void elevator::stop_down(){
+void elevator::stop_down() {
   for (int fl_num = 4; fl_num >= 1; --fl_num)
   {
     std::cout<<"Going down to floor "<<fl_num<<endl;
@@ -218,7 +215,6 @@ void elevator::operate() {
       if(!enter(vst))                             // val'tous olous apo isogeio
         grl->get_wr()->enter(vst);                // Stin periptwsh pou den mpei sto asanser, 3anavalton mesa sto grl 
     }                                               
-    
     stop_up();
     stop_down();
     empty_all();
@@ -259,7 +255,7 @@ void elevator::empty_all() {
 
 int elevator::get_cap() { return cap; }
 
-int elevator::get_curr(){ return curr; }
+int elevator::get_curr() { return curr; }
 
 elevator::elevator(int Nl, int l_circl, floor **fl_arr,ground_level* grlvl) {
   fl  = fl_arr;
@@ -292,7 +288,7 @@ void building::enter (visitor* vst) {
   }
 }
 
-void building::exit(visitor *vst){
+void building::exit(visitor *vst) {
   --curr;
   std::cout << "\"OOF, I FINALLY FINISHED! BEST DAY EVER!\"  -" 
             << "FL: " << vst->get_floor() << "  OF: " << vst->get_office_num()
