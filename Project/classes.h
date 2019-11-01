@@ -28,8 +28,8 @@ class visitor
   unsigned int priority; 
   bool is_satisfied;
 public:
-  visitor(int fl, int off);
-  void set_priority(int);
+  visitor(short fl, short off);
+  void set_priority(unsigned int);
   unsigned int get_priority();
   short get_office_num();
   short get_floor();
@@ -80,7 +80,7 @@ class office
   unsigned int total; // total visitors, used to prioritize ppl (bank-style)       
   queue<visitor*> visitors;
 public:
-  office(int No, int num);
+  office(unsigned int No, short num);
   ~office();
   bool enter(visitor *);
   visitor *exit();
@@ -98,14 +98,14 @@ class floor
   waiting_room* wr;
   office** off;
 public:
-  floor(int Nf,int No);
+  floor(unsigned int Nf,unsigned int No);
   ~floor();
   bool enter(visitor *);    
   visitor *exit();
   unsigned int get_cap();
   unsigned int get_curr();
   waiting_room* get_wr();
-  office *get_office(int office_n); //[Harry] added this one used on elevator::stop_down
+  office *get_office(short office_n); //[Harry] added this one used on elevator::stop_down
 };
 
 /* ===========================================================||  E L E V A T O R  ||=========================================================== */
@@ -126,7 +126,7 @@ class elevator
   void stop_up();
   void stop_down();
 public:                          
-  elevator(int Nl, int lc, floor **,ground_level*);    
+  elevator(unsigned int Nl,unsigned int lc, floor **,ground_level*);    
   ~elevator();
   void operate();
   unsigned int get_cap();
@@ -143,7 +143,7 @@ class building
   floor** fl;  // Floor pointer (create floors dynamically during construction)
   elevator* el;
 public:
-  building(int N, int Nf, int Ng, int No, int Nl, int lc);  
+  building(unsigned int N,unsigned int Nf,unsigned int Ng,unsigned int No,unsigned int Nl,unsigned int lc);  
   ~building();                                
   void enter(visitor *);
   void exit(visitor *);

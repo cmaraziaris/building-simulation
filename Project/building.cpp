@@ -2,7 +2,7 @@
 
 /* ============================================||  V I S I T O R   F U N C T I O N S  ||============================================ */ 
 
-visitor::visitor(int fl, int off){
+visitor::visitor(short fl,short off) {
   floor = fl;
   office_num = off;
   is_satisfied = false;
@@ -10,7 +10,7 @@ visitor::visitor(int fl, int off){
 
 void visitor::set_satisfaction(bool sat) { is_satisfied = sat; }
 
-void visitor::set_priority(int pr) { priority = pr; }
+void visitor::set_priority(unsigned int pr) { priority = pr; }
 
 bool visitor::get_satisfaction() { return is_satisfied; }
 
@@ -81,9 +81,9 @@ ground_level::~ground_level(){
 
 /* ============================================||  O F F I C E   F U N C T I O N S  ||============================================ */ 
 
-bool office::is_empty(){ return (visitors.size() == 0) ? true : false; } 
+bool office::is_empty() { return (visitors.size() == 0) ? true : false; } 
 
-office::office(int No, int num) {
+office::office(unsigned int No,short num) {
   cap    = No;
   number = num;
   total  = 0;
@@ -121,7 +121,7 @@ visitor *office::exit() {
 
 waiting_room* floor::get_wr(void) { return wr; }
 
-office *floor::get_office(int off_n){ return off[off_n-1]; } //[Harry] args from 1-10
+office *floor::get_office(short off_n){ return off[off_n-1]; } //[Harry] args from 1-10
 
 unsigned int floor::get_cap() { return cap; }
 
@@ -144,24 +144,24 @@ bool floor::enter(visitor* vst) {
 visitor *floor::exit() {
   --curr;
   while(1){
-    int i = rand() % 10 + 1;
+    short i = rand() % 10 + 1;
     if( get_office(i)->is_empty() == false ) {
       return get_office(i)->exit();
     }
   }
 }
 
-floor::floor(int Nf,int No) {
+floor::floor(unsigned int Nf,unsigned int No) {
   cap=Nf; 
   curr=0;
   wr=new waiting_room;
   off=new office*[10];
-  for (int i = 0; i < 10; i++) off[i]=new office(No,i+1);
+  for (short i = 0; i < 10; i++) off[i]=new office(No,i+1);
 }
 
 floor::~floor() {
   delete wr;
-  for (int i = 0; i < 10; i++)
+  for (short i = 0; i < 10; i++)
     delete off[i];
   delete[] off;
   std::cout<<"End of service!\n";
@@ -171,11 +171,11 @@ floor::~floor() {
 
 // selects visitors ready2leave from the floor and puts them in the elevator
 void elevator::stop_down() {
-  for (int fl_num = 4; fl_num >= 1; --fl_num)
+  for (short fl_num = 4; fl_num >= 1; --fl_num)
   {
     std::cout<<"Going down to floor "<<fl_num<<endl;
-    int sel = get_cap() - get_curr();
-    for (int i = 0; i < sel && fl[fl_num-1]->get_curr() > 0; ++i)
+    unsigned int sel = get_cap() - get_curr();
+    for (unsigned int i = 0; i < sel && fl[fl_num-1]->get_curr() > 0; ++i)
     {
       ++curr;
       visitors.push(fl[fl_num-1]->exit());
@@ -185,11 +185,11 @@ void elevator::stop_down() {
 
 // [Harry] my comments, no use using the tag on this 1
 void elevator::stop_up() {
-  for (int cur_fl = 1; cur_fl <= 4; ++cur_fl)
+  for (short cur_fl = 1; cur_fl <= 4; ++cur_fl)
   {
     std::cout<<"Going up to floor "<<cur_fl<<endl;
     // this is done so that ppl avoid being stuck eternally in the wr
-    for (int i = 0, max = fl[cur_fl-1]->get_wr()->get_vst().size(); i < max; ++i)
+    for (unsigned int i = 0, max = fl[cur_fl-1]->get_wr()->get_vst().size(); i < max; ++i)
     {
       visitor *vst = fl[cur_fl-1]->get_wr()->exit();
       office *off =fl[cur_fl-1]->get_office(vst->get_office_num());
@@ -197,7 +197,7 @@ void elevator::stop_up() {
         fl[cur_fl-1]->get_wr()->enter(vst);
     }
 
-    for (int i = 0, max = visitors.size(); i < max; ++i)
+    for (unsigned int i = 0, max = visitors.size(); i < max; ++i)
     {
       visitor *vst = visitors.front();
       if (!(vst->get_floor() == cur_fl && fl[cur_fl-1]->enter(vst)))   // if correct floor -> try to enter
@@ -257,7 +257,7 @@ unsigned int elevator::get_cap() { return cap; }
 
 unsigned int elevator::get_curr() { return curr; }
 
-elevator::elevator(int Nl, int l_circl, floor **fl_arr,ground_level* grlvl) {
+elevator::elevator(unsigned int Nl,unsigned int l_circl, floor **fl_arr,ground_level* grlvl) {
   fl  = fl_arr;
   cap = Nl; 
   curr  = 0;
@@ -295,7 +295,7 @@ void building::exit(visitor *vst) {
             << "  PR: " << vst->get_priority() << endl;
 }
 
-building::building(int N, int Nf, int Ng, int No, int Nl, int l_circl) {
+building::building(unsigned int N,unsigned int Nf,unsigned int Ng,unsigned int No,unsigned int Nl,unsigned int l_circl) {
   cap=N; 
   curr=0;
   std::cout<< "A new building is ready for serving citizens!\n\n";
