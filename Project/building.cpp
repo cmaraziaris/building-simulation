@@ -102,7 +102,7 @@ int office::get_cap(){ return cap; }
 bool office::enter(visitor *vst){
   ++total;
   vst->set_priority(total);
-  if (visitors.size() == get_cap()){
+  if (visitors.size() == (unsigned int)(get_cap())){
     std::cout << "Please, wait outside for entrance in the office. Your priority is: " << total << endl;
     return false;
   } else {
@@ -245,7 +245,7 @@ void elevator::exit(visitor *vst) {
 
 // calls elevator::exit on every satisfied client inside the lift
 void elevator::empty_all() {
-  for (int i = 0; i < visitors.size() ; i++) 
+  for (unsigned int i = 0; i < visitors.size() ; i++) 
   { 
     visitor *vst = visitors.front();
     if (vst->get_satisfaction() == false)
