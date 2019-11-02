@@ -34,13 +34,13 @@ void waiting_room::enter(visitor* vst) {
 }
 
 visitor* waiting_room::exit() {
-  visitor* vst=visitors.top();
+  visitor* vst=visitors.front();
   visitors.pop();
   curr--;
   return vst;
 }
 
-priority_queue<visitor*> waiting_room::get_vst(void) { return visitors; }
+queue<visitor*> waiting_room::get_vst(void) { return visitors; }
 
 unsigned int waiting_room::get_curr() { return curr; }
 
@@ -105,7 +105,7 @@ bool office::enter(visitor *vst) {
 } 
 
 visitor *office::exit() { 
-  visitor *vst = visitors.top();
+  visitor *vst = visitors.front();
   vst->set_satisfaction(true);
   visitors.pop();
   return vst;  
@@ -216,7 +216,7 @@ void elevator::stop_up() {
 
     for (unsigned int i = 0, max = visitors.size(); i < max; ++i)
     {
-      visitor *vst = visitors.top();
+      visitor *vst = visitors.front();
       if (!(vst->get_floor() == cur_fl && fl[cur_fl-1]->enter(vst)))   // if correct floor -> try to enter
         visitors.push(vst);
       else  curr--;
@@ -242,7 +242,7 @@ void elevator::operate() {
 void elevator::empty_all() {
   for (unsigned int i = 0; i < visitors.size() ; i++) 
   { 
-    visitor *vst = visitors.top();
+    visitor *vst = visitors.front();
     if (vst->get_satisfaction() == false)
       visitors.push(vst);  
     else 
