@@ -28,8 +28,7 @@ class visitor
   unsigned int priority; 
   bool is_satisfied;
 public:
-  visitor(short fl, short off);
-  void set_priority(unsigned int);
+  visitor(short fl, short off, unsigned int pr);
   unsigned int get_priority();
   short get_office_num();
   short get_floor();
@@ -77,7 +76,6 @@ class office
 {
   short number;
   unsigned int cap;
-  unsigned int total; // total visitors, used to prioritize ppl (bank-style)       
   queue<visitor*> visitors;
 public:
   office(unsigned int No, short num);
@@ -112,7 +110,6 @@ public:
 
 class elevator
 {
-  unsigned int total; // [Harry] used to prioritize ppl as usual
   unsigned int cap;
   short curr_fl;
   floor** fl;

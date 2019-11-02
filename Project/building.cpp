@@ -3,14 +3,12 @@
 
 /* ============================================||  V I S I T O R   F U N C T I O N S  ||============================================ */ 
 
-visitor::visitor(short fl,short off) 
-: floor(fl), office_num(off), is_satisfied(false) {}
+visitor::visitor(short fl, short off, unsigned int pr) 
+: floor(fl), office_num(off), priority(pr), is_satisfied(false) {}
 
 void visitor::set_satisfaction(bool sat) { is_satisfied = sat; }
 
 bool visitor::get_satisfaction() { return is_satisfied; }
-
-void visitor::set_priority(unsigned int pr) { priority = pr; }
 
 unsigned int visitor::get_priority() { return priority; }
 
@@ -81,7 +79,7 @@ void ground_level::exit(visitor *vst){
 /* ============================================||  O F F I C E   F U N C T I O N S  ||============================================ */
 
 office::office(unsigned int No,short num) 
-: number(num), cap(No), total(0)
+: number(num), cap(No)
 { std::cout << "Office #" << number << " has been created\n"; }
 
 office::~office() { std::cout << "End of the work!\n"; }
@@ -91,10 +89,8 @@ bool office::is_empty() { return (visitors.size() == 0); }
 unsigned int office::get_cap(){ return cap; }
 
 bool office::enter(visitor *vst) {
-  ++total;
-  vst->set_priority(total);
   if (visitors.size() == (unsigned int)(get_cap())){
-    std::cout << "Please, wait outside for entrance in the office. Your priority is: " << total << endl;
+    std::cout << "Please, wait outside for entrance in the office. Your priority is: " << vst->get_priority() << endl;
     return false;
   } else {
     visitors.push(vst);
@@ -165,12 +161,11 @@ visitor *floor::exit() {
 /* ============================================||  E L E V A T O R   F U N C T I O N S  ||============================================ */ 
 
 elevator::elevator(unsigned int Nl,unsigned int l_circl, floor **fl_arr,ground_level* gr_lvl)
-: total(0), cap(Nl), curr_fl(0), fl(fl_arr), grl(gr_lvl), curr(0), crcl_rem(l_circl) {}
+: cap(Nl), curr_fl(0), fl(fl_arr), grl(gr_lvl), curr(0), crcl_rem(l_circl) {}
 
 elevator::~elevator() { std::cout << "No more ups and downs!\n"; }
 
 bool elevator::enter(visitor* vst) {
-  vst->set_priority(++total);
   if (get_curr() < get_cap()) {
     visitors.push(vst);
     curr++;

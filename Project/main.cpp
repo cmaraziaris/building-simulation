@@ -30,7 +30,7 @@ int main(int argc, char const *argv[])
   {
     short fl  = rnd4(randomGen); 
     short off = rnd10(randomGen); 
-    ppl[i]  = new visitor(fl, off);
+    ppl[i]  = new visitor(fl, off, i+1);
   }
 
   /* Create a building, visitors attempt to enter */
