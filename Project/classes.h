@@ -98,7 +98,7 @@ class floor
   waiting_room* wr;
   office** off;
 public:
-  floor(unsigned int Nf,unsigned int No);
+  floor(unsigned int num, unsigned int Nf, unsigned int No);
   ~floor();
   bool enter(visitor *);    
   visitor *exit();
@@ -126,7 +126,7 @@ class elevator
   void stop_up();
   void stop_down();
 public:                          
-  elevator(unsigned int Nl,unsigned int lc, floor **,ground_level*);    
+  elevator(unsigned int Nl, unsigned int lc, floor **, ground_level*);    
   ~elevator();
   void operate();
   unsigned int get_cap();
@@ -143,7 +143,7 @@ class building
   floor** fl;  // Floor pointer (create floors dynamically during construction)
   elevator* el;
 public:
-  building(unsigned int N,unsigned int Nf,unsigned int Ng,unsigned int No,unsigned int Nl,unsigned int lc);  
+  building(unsigned int N, unsigned int Nf, unsigned int Ng, unsigned int No, unsigned int Nl, unsigned int lc);  
   ~building();                                
   void enter(visitor *);
   void exit(visitor *);
