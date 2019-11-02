@@ -4,6 +4,8 @@
 #include "classes.h"
 #include <random>
 
+using namespace std;
+
 int main(int argc, char const *argv[])
 {
   if (argc != 8) {  /* Error check */
@@ -48,5 +50,5 @@ int main(int argc, char const *argv[])
     delete ppl[i];
   delete[] ppl;
 
-  return 0;
+  return EXIT_SUCCESS;
 }
