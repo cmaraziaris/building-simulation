@@ -37,6 +37,3 @@ make clean
 ## Authors
 - [Spiros Chalkias](https://github.com/spChalk)
 - [Harry  Maraziaris](https://github.com/cMrzrs)
-
-## License
-[MIT](https://choosealicense.com/licenses/mit/)
