@@ -1,18 +1,16 @@
+
 #include "classes.h"
 
 /* ============================================||  V I S I T O R   F U N C T I O N S  ||============================================ */ 
 
-visitor::visitor(short fl,short off) {
-  floor = fl;
-  office_num = off;
-  is_satisfied = false;
-}
+visitor::visitor(short fl,short off) 
+: floor(fl), office_num(off), is_satisfied(false) {}
 
 void visitor::set_satisfaction(bool sat) { is_satisfied = sat; }
 
-void visitor::set_priority(unsigned int pr) { priority = pr; }
-
 bool visitor::get_satisfaction() { return is_satisfied; }
+
+void visitor::set_priority(unsigned int pr) { priority = pr; }
 
 unsigned int visitor::get_priority() { return priority; }
 
@@ -20,7 +18,12 @@ short visitor::get_office_num() { return office_num; }
 
 short visitor::get_floor()  { return floor; }
 
+
 /* ============================================||  W A I T I N G    R O O M    F U N C T I O N S  ||============================================ */ 
+
+waiting_room::waiting_room() : curr(0) {}
+
+waiting_room::~waiting_room() {  std::cout << "End of waiting people!\n"; }
 
 void waiting_room::enter(visitor* vst) {
   curr++;
@@ -38,12 +41,20 @@ queue<visitor*> waiting_room::get_vst(void) { return visitors; }
 
 unsigned int waiting_room::get_curr() { return curr; }
 
-waiting_room::waiting_room() { curr = 0; }
-
-waiting_room::~waiting_room() {  std::cout << "End of waiting people!\n"; }
 
 /* ============================================||  G R O U N D   L E V E L   F U N C T I O N S  ||============================================ */ 
-// CARE: mh metrame sto sum tous an8rwpous sto wr or smthg
+
+ground_level::ground_level (int Ng, building* bldg)
+: cap(Ng), curr(0), bld(bldg) 
+{
+  wr  = new waiting_room;
+  std::cout << "The Entrance has been created!\n";
+}
+
+ground_level::~ground_level(){ 
+  delete wr;
+  std::cout << "End of service!\n";
+}
 
 waiting_room* ground_level::get_wr(void) { return wr; }
 
@@ -66,34 +77,16 @@ void ground_level::exit(visitor *vst){
   bld->exit(vst);
 }
 
-ground_level::ground_level (int Ng, building* bldg) {
-  cap  = Ng; 
-  curr = 0;
-  wr  = new waiting_room;
-  bld = bldg;
-  std::cout << "The Entrance has been created!\n";
-}
 
-ground_level::~ground_level(){ 
-  delete wr;
-  std::cout << "End of service!\n";
-}
+/* ============================================||  O F F I C E   F U N C T I O N S  ||============================================ */
 
-/* ============================================||  O F F I C E   F U N C T I O N S  ||============================================ */ 
+office::office(unsigned int No,short num) 
+: number(num), cap(No), total(0)
+{ std::cout << "Office #" << number << " has been created\n"; }
 
-bool office::is_empty() { return (visitors.size() == 0) ? true : false; } 
+office::~office() { std::cout << "End of the work!\n"; }
 
-office::office(unsigned int No,short num) {
-  cap    = No;
-  number = num;
-  total  = 0;
-  std::cout << "Office #" << number << " has been created" << endl;
-}
-
-office::~office() { 
-  while (!visitors.empty()) visitors.pop(); //[Harry] pretty sure that's optional
-  std::cout << "End of the work!" << endl;  //[Harry] will delete before finalisation
-}
+bool office::is_empty() { return (visitors.size() == 0); } 
 
 unsigned int office::get_cap(){ return cap; }
 
@@ -117,7 +110,24 @@ visitor *office::exit() {
   return vst;  
 }
 
+
 /* ============================================||  F L O O R   F U N C T I O N S  ||============================================ */ 
+
+floor::floor(unsigned int Nf, unsigned int No, unsigned int num)
+: number(num), cap(Nf), curr(0)
+{
+  wr=new waiting_room;
+  off=new office*[10];
+  for (short i = 0; i < 10; i++) off[i]=new office(No,i+1);
+}
+
+floor::~floor() {
+  delete wr;
+  for (short i = 0; i < 10; i++)
+    delete off[i];
+  delete[] off;
+  std::cout<<"End of service!\n";
+}
 
 waiting_room* floor::get_wr(void) { return wr; }
 
@@ -151,23 +161,31 @@ visitor *floor::exit() {
   }
 }
 
-floor::floor(unsigned int Nf,unsigned int No) {
-  cap=Nf; 
-  curr=0;
-  wr=new waiting_room;
-  off=new office*[10];
-  for (short i = 0; i < 10; i++) off[i]=new office(No,i+1);
-}
-
-floor::~floor() {
-  delete wr;
-  for (short i = 0; i < 10; i++)
-    delete off[i];
-  delete[] off;
-  std::cout<<"End of service!\n";
-}
 
 /* ============================================||  E L E V A T O R   F U N C T I O N S  ||============================================ */ 
+
+elevator::elevator(unsigned int Nl,unsigned int l_circl, floor **fl_arr,ground_level* gr_lvl)
+: total(0), cap(0), curr_fl(0), fl(fl_arr), grl(gr_lvl), curr(0), crcl_rem(l_circl) {}
+
+elevator::~elevator() { std::cout << "No more ups and downs!\n"; }
+
+bool elevator::enter(visitor* vst) {
+  vst->set_priority(++total);
+  if (get_curr() < get_cap()) {
+    visitors.push(vst);
+    curr++;
+    std::cout << "Visitor in the lift!" << endl;
+    return true;
+  }
+  std::cout << "You are not allowed to enter!\n" << "Your priority is: " 
+            << vst->get_priority() << endl; 
+  return false;
+}
+
+void elevator::exit(visitor *vst) {
+  --curr;
+  grl->exit(vst);
+}
 
 // selects visitors ready2leave from the floor and puts them in the elevator
 void elevator::stop_down() {
@@ -183,7 +201,6 @@ void elevator::stop_down() {
   }
 }
 
-// [Harry] my comments, no use using the tag on this 1
 void elevator::stop_up() {
   for (short cur_fl = 1; cur_fl <= 4; ++cur_fl)
   {
@@ -221,24 +238,6 @@ void elevator::operate() {
   }
 }
 
-bool elevator::enter(visitor* vst) {
-  vst->set_priority(++total);
-  if (get_curr() < get_cap()) {
-    visitors.push(vst);
-    curr++;
-    std::cout << "Visitor in the lift!" << endl;
-    return true;
-  }
-  std::cout << "You are not allowed to enter!\n" << "Your priority is: " 
-            << vst->get_priority() << endl; 
-  return false;
-}
-
-void elevator::exit(visitor *vst) {
-  --curr;
-  grl->exit(vst);
-}
-
 // calls elevator::exit on every satisfied client inside the lift
 void elevator::empty_all() {
   for (unsigned int i = 0; i < visitors.size() ; i++) 
@@ -257,26 +256,31 @@ unsigned int elevator::get_cap() { return cap; }
 
 unsigned int elevator::get_curr() { return curr; }
 
-elevator::elevator(unsigned int Nl,unsigned int l_circl, floor **fl_arr,ground_level* grlvl) {
-  fl  = fl_arr;
-  cap = Nl; 
-  curr  = 0;
-  total = 0;
-  curr_fl  = 0;    // Initially , the floor is 0
-  crcl_rem = l_circl;
-  grl=grlvl;
-}
-
-elevator::~elevator() {
-  while (!visitors.empty()) visitors.pop(); //opt
-  std::cout << "No more ups and downs!\n";
-}
 
 /* ============================================||  B U I L D I N G   F U N C T I O N S  ||============================================ */ 
 
-ground_level* building::get_gr_lvl(void) { return gr_lvl; }
+building::building(unsigned int N, unsigned int Nf, unsigned int Ng, unsigned int No, unsigned int Nl, unsigned int l_circl)
+: cap(N), curr(0) {
+  std::cout << "A new building is ready for serving citizens!\n\n";
+  gr_lvl = new ground_level(Ng, this);
+  std::cout << "A Floor has been created with number 0!\n";
+  fl = new floor*[4];
+  for (int i = 0; i < 4; i++) {
+    fl[i] = new floor(i+1, Nf, No);
+    std::cout << "A Floor has been created with number " << i+1 << "!\n";
+  }
+  el = new elevator(Nl, l_circl, fl,gr_lvl);
+  std::cout << "A lift has been created!\n";
+}
 
-elevator* building::get_elevator(void) { return el; }
+building::~building() {
+  delete el;
+  for (int i = 0; i < 4; i++)
+    delete fl[i];
+  delete[] fl;
+  delete gr_lvl;
+  std::cout<<"Service not available any longer. Go elsewhere!\n";
+}
 
 void building::enter (visitor* vst) {
   if ((curr == cap) || gr_lvl->enter(vst) == false)
@@ -295,26 +299,8 @@ void building::exit(visitor *vst) {
             << "  PR: " << vst->get_priority() << endl;
 }
 
-building::building(unsigned int N,unsigned int Nf,unsigned int Ng,unsigned int No,unsigned int Nl,unsigned int l_circl) {
-  cap=N; 
-  curr=0;
-  std::cout<< "A new building is ready for serving citizens!\n\n";
-  gr_lvl=new ground_level(Ng, this);
-  std::cout<< "A Floor has been created with number 0!\n";
-  fl=new floor*[4];
-  for (int i = 0; i < 4; i++) {
-    fl[i]=new floor(Nf,No);
-    std::cout<<"A Floor has been created with number "<<i+1<<"!\n";
-  }
-  el=new elevator(Nl, l_circl, fl,gr_lvl);
-  std::cout<<"A lift has been created!\n";
-}
+ground_level* building::get_gr_lvl(void) { return gr_lvl; }
 
-building::~building() {
-  delete el;
-  for (int i = 0; i < 4; i++)
-    delete fl[i];
-  delete[] fl;
-  delete gr_lvl;
-  std::cout<<"Service not available any longer. Go elsewhere!\n";
-}
+elevator* building::get_elevator(void) { return el; }
+
+/* ========================================================||  END OF FILE  ||======================================================== */ 
