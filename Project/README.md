@@ -34,7 +34,7 @@ make
 ```cplusplus
 make clean
 ```
-## Contributors
+## Authors
 - [Spiros Chalkias](https://github.com/spChalk)
 - [Harry  Maraziaris](https://github.com/cMrzrs)
 
