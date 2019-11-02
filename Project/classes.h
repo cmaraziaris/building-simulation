@@ -4,11 +4,7 @@
 
 #pragma once
 
-#include <iostream>
-#include <cstdio>
 #include <queue>
-
-using namespace std;
 
 /* Declarations */
 class visitor;
@@ -41,14 +37,14 @@ public:
 class waiting_room
 {
   unsigned int curr;
-  queue<visitor*> visitors;  
+  std::priority_queue<visitor*> visitors;  
 public:
   waiting_room();    /* Waiting room does not have maximum capacity */
   ~waiting_room();
   void enter(visitor*);
   visitor* exit(); 
   unsigned int get_curr();
-  queue<visitor*> get_vst();
+  std::priority_queue<visitor*> get_vst();
 };
 
 /* ===========================================================||  G R O U N D   L E V E L  ||=========================================================== */
@@ -76,7 +72,7 @@ class office
 {
   short number;
   unsigned int cap;
-  queue<visitor*> visitors;
+  std::priority_queue<visitor*> visitors;
 public:
   office(unsigned int No, short num);
   ~office();
@@ -116,7 +112,7 @@ class elevator
   ground_level* grl;
   unsigned int curr;
   unsigned int crcl_rem;   // circles remaining // ousiastika termatizei th diadikasia
-  queue<visitor*> visitors;
+  std::priority_queue<visitor*> visitors;
   bool enter(visitor*);     
   void exit(visitor*);   
   void empty_all(); 
