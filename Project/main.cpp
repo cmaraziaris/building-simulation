@@ -1,8 +1,8 @@
 #include <iostream>
 #include <cstdio>
 #include <chrono>
-#include <random>
 #include "classes.h"
+#include <random>
 
 int main(int argc, char const *argv[])
 {
