@@ -9,7 +9,7 @@ int main(int argc, char const *argv[])
   if (argc != 8) {  /* Error check */
     std::cerr << "\nUsage:\n" << argv[0] 
     << " <max_cap> <floor_cap> <ground_cap> <office_cap> <elevator_cap>" 
-    << " <number_of_visitors> <elevator_circles>\n" << endl;
+    << " <number_of_visitors> <elevator_circles>\n" << std::endl;
     exit(EXIT_FAILURE); 
   }
 
