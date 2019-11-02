@@ -113,7 +113,7 @@ visitor *office::exit() {
 
 /* ============================================||  F L O O R   F U N C T I O N S  ||============================================ */ 
 
-floor::floor(unsigned int Nf, unsigned int No, unsigned int num)
+floor::floor(unsigned int Nf, unsigned int No, short num) 
 : number(num), cap(Nf), curr(0)
 {
   wr=new waiting_room;
@@ -144,7 +144,7 @@ bool floor::enter(visitor* vst) {
     curr++;
     return true;
   }
-  std::cout << "Sorry, floor number " << number << "is full." << endl;
+  std::cout << "Sorry, floor number " << number << " is full." << endl;
   std::cout << "Your priority is: "   << vst->get_priority()  << endl;
   return false;
 }
@@ -165,7 +165,7 @@ visitor *floor::exit() {
 /* ============================================||  E L E V A T O R   F U N C T I O N S  ||============================================ */ 
 
 elevator::elevator(unsigned int Nl,unsigned int l_circl, floor **fl_arr,ground_level* gr_lvl)
-: total(0), cap(0), curr_fl(0), fl(fl_arr), grl(gr_lvl), curr(0), crcl_rem(l_circl) {}
+: total(0), cap(Nl), curr_fl(0), fl(fl_arr), grl(gr_lvl), curr(0), crcl_rem(l_circl) {}
 
 elevator::~elevator() { std::cout << "No more ups and downs!\n"; }
 
@@ -265,8 +265,8 @@ building::building(unsigned int N, unsigned int Nf, unsigned int Ng, unsigned in
   gr_lvl = new ground_level(Ng, this);
   std::cout << "A Floor has been created with number 0!\n";
   fl = new floor*[4];
-  for (int i = 0; i < 4; i++) {
-    fl[i] = new floor(i+1, Nf, No);
+  for (short i = 0; i < 4; i++) {
+    fl[i] = new floor(Nf, No, i+1);
     std::cout << "A Floor has been created with number " << i+1 << "!\n";
   }
   el = new elevator(Nl, l_circl, fl,gr_lvl);
@@ -275,7 +275,7 @@ building::building(unsigned int N, unsigned int Nf, unsigned int Ng, unsigned in
 
 building::~building() {
   delete el;
-  for (int i = 0; i < 4; i++)
+  for (short i = 0; i < 4; i++)
     delete fl[i];
   delete[] fl;
   delete gr_lvl;

@@ -98,7 +98,7 @@ class floor
   waiting_room* wr;
   office** off;
 public:
-  floor(unsigned int num, unsigned int Nf, unsigned int No);
+  floor(unsigned int Nf, unsigned int No, short num);
   ~floor();
   bool enter(visitor *);    
   visitor *exit();
