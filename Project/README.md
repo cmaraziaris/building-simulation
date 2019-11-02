@@ -35,8 +35,8 @@ make
 make clean
 ```
 ## Contributors
-[Spiros Chalkias](https://github.com/spChalk).
-[Harry  Maraziaris](https://github.com/cMrzrs).
+- [Spiros Chalkias](https://github.com/spChalk)
+- [Harry  Maraziaris](https://github.com/cMrzrs)
 
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)
