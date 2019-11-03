@@ -6,12 +6,19 @@
 
 using namespace std;
 
+#if 0 //TODO: Remove before finalisation
+void debug_cout(visitor *vst){             
+  std::cout << "<<<<<<<<<<<<<<" << " F: " << vst->get_floor() << "  O: " 
+  << vst->get_office_num() << "  P: " << vst->get_priority() << std::endl; }
+
+#define DEBUG(X) debug_cout(X);
+#endif
 /* ============================================||  V I S I T O R   F U N C T I O N S  ||============================================ */ 
 
-visitor::visitor(short fl, short off, unsigned int pr) 
+visitor::visitor(const short fl, const short off, const unsigned int pr) 
 : floor(fl), office_num(off), priority(pr), is_satisfied(false) {}
 
-void visitor::set_satisfaction(bool sat) { is_satisfied = sat; }
+void visitor::set_satisfaction(const bool sat) { is_satisfied = sat; }
 
 bool visitor::get_satisfaction() { return is_satisfied; }
 
@@ -26,7 +33,7 @@ short visitor::get_floor()  { return floor; }
 
 waiting_room::waiting_room() : curr(0) {}
 
-waiting_room::~waiting_room() {  std::cout << "End of waiting people!\n"; }
+waiting_room::~waiting_room() { std::cout << "End of waiting people!\n"; }
 
 void waiting_room::enter(visitor* vst) {
   curr++;
@@ -47,7 +54,7 @@ unsigned int waiting_room::get_curr() { return curr; }
 
 /* ============================================||  G R O U N D   L E V E L   F U N C T I O N S  ||============================================ */ 
 
-ground_level::ground_level (int Ng, building* bldg)
+ground_level::ground_level (const int Ng, building *const bldg)
 : cap(Ng), curr(0), bld(bldg) 
 {
   wr  = new waiting_room;
@@ -151,7 +158,7 @@ bool floor::enter(visitor* vst) {
 }
 
 // Randomly chooses and returns a person from an office
-// Please care about an empty floor
+// Please care about an empty floor and a non-empty WR
 visitor *floor::exit() {
   --curr;
   while(1){
@@ -177,8 +184,8 @@ bool elevator::enter(visitor* vst) {
     std::cout << "Visitor in the lift!" << endl;
     return true;
   }
-  std::cout << "You are not allowed to enter!\n" << "Your priority is: " 
-            << vst->get_priority() << endl; 
+  std::cout << "You are not allowed to enter!\n" << "Your priority is: "
+            << vst->get_priority() << endl;
   return false;
 }
 
@@ -191,12 +198,13 @@ void elevator::exit(visitor *vst) {
 void elevator::stop_down() {
   for (short fl_num = 4; fl_num >= 1; --fl_num)
   {
-    std::cout<<"Going down to floor "<<fl_num<<endl;
+    floor *flr = fl[fl_num-1];
+    std::cout << "Going down to floor " << fl_num  << std::endl;
     unsigned int sel = get_cap() - get_curr();
-    for (unsigned int i = 0; i < sel && fl[fl_num-1]->get_curr() > 0; ++i)
+    for (unsigned int i = 0; i < sel && (flr->get_curr() != flr->get_wr()->get_curr()); ++i)
     {
       ++curr;
-      visitors.push(fl[fl_num-1]->exit());
+      visitors.push(flr->exit());
     }
   }
 }
@@ -204,7 +212,7 @@ void elevator::stop_down() {
 void elevator::stop_up() {
   for (short cur_fl = 1; cur_fl <= 4; ++cur_fl)
   {
-    std::cout<<"Going up to floor "<<cur_fl<<endl;
+    std::cout << "Going up to floor " << cur_fl << std::endl;
     // this is done so that ppl avoid being stuck eternally in the wr
     for (unsigned int i = 0, max = fl[cur_fl-1]->get_wr()->get_vst().size(); i < max; ++i)
     {
@@ -240,7 +248,7 @@ void elevator::operate() {
 
 // calls elevator::exit on every satisfied client inside the lift
 void elevator::empty_all() {
-  for (unsigned int i = 0; i < visitors.size() ; i++) 
+  for (unsigned int i = 0, max = visitors.size();  i < max; i++) 
   { 
     visitor *vst = visitors.front();
     if (vst->get_satisfaction() == false)
@@ -284,19 +292,20 @@ building::~building() {
 
 void building::enter (visitor* vst) {
   if ((curr == cap) || gr_lvl->enter(vst) == false)
-    std::cout << "Please, come tomorrow." << endl;
+    std::cout << "Please, come tomorrow. P: " << vst->get_priority() << std::endl;
   else {
     curr++;
     std::cout << "A new customer wants to go to Floor " << vst->get_floor()
-         << " and Office " << vst->get_office_num() << endl; 
+              << " and Office " << vst->get_office_num() << " with Priority "
+              << vst->get_priority() << std::endl; 
   }
 }
 
 void building::exit(visitor *vst) {
   --curr;
-  std::cout << "\"OOF, I FINALLY FINISHED! BEST DAY EVER!\"  -" 
-            << "FL: " << vst->get_floor() << "  OF: " << vst->get_office_num()
-            << "  PR: " << vst->get_priority() << endl;
+  std::cout << "\n\"I can't believe I finished!\" - " 
+            << "F: " << vst->get_floor() << "  O: " << vst->get_office_num()
+            << "  P: " << vst->get_priority() << " " << std::endl;
 }
 
 ground_level* building::get_gr_lvl(void) { return gr_lvl; }
