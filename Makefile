@@ -2,7 +2,7 @@
 
 CXX = g++
 
-CXXFLAGS = -g3 -Wall -I. -std=c++11	#TODO: Remove -g3 before finalisation :3
+CXXFLAGS = -Wall -I. -std=c++11	
 
 PROGRAM = building_sim
 
