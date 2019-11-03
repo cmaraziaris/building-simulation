@@ -36,7 +36,7 @@ public:
 
 class waiting_room
 {
-  unsigned int curr;  /* Waiting room does not have maximum capacity */
+  unsigned int curr;  // Waiting room does not have maximum capacity 
   std::queue<visitor*> visitors;  
 public:
   waiting_room();
@@ -51,8 +51,8 @@ public:
 
 class ground_level
 {
-  const unsigned int cap;
-  unsigned int curr;
+  const unsigned int cap; // cap  == capacity 
+  unsigned int curr;      // curr == current # of people inside 
   building* const bld;  
   waiting_room* wr;
 public:
@@ -110,7 +110,7 @@ class elevator
   floor **const fl;
   ground_level *const grl;
   unsigned int curr;
-  unsigned int crcl_rem;   // circles remaining // ousiastika termatizei th diadikasia
+  unsigned int crcl_rem;   // Elevator circles remaining 
   std::queue<visitor*> visitors;
   bool enter(visitor *);     
   void exit(visitor *);   
@@ -129,8 +129,8 @@ public:
 
 class building
 {
-  const unsigned int cap;  /* cap  == capacity */
-  unsigned int curr;       /* curr == current # of ppl inside */
+  const unsigned int cap;  
+  unsigned int curr;       
   ground_level * gr_lvl;
   floor ** fl;
   elevator * el;

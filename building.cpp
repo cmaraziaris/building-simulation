@@ -34,7 +34,7 @@ void waiting_room::enter(visitor* vst) {
 }
 
 visitor* waiting_room::exit() {
-  visitor* vst=visitors.front();
+  visitor* vst=visitors.front();      // Get and return the front visitor in queue
   visitors.pop();
   curr--;
   return vst;
@@ -66,7 +66,7 @@ unsigned int ground_level::get_cap() { return cap; }
 unsigned int ground_level::get_curr() { return curr; }
 
 bool ground_level::enter(visitor* vst) {
-  if (get_curr() == get_cap())
+  if (get_curr() == get_cap())            // If the ground level has as many visitors as its maximum capacity, entry is prohibited
     return false;
   curr++;
   wait(vst);
@@ -106,7 +106,7 @@ bool office::enter(visitor *vst) {
 
 visitor *office::exit() { 
   visitor *vst = visitors.front();
-  vst->set_satisfaction(true);
+  vst->set_satisfaction(true);        //  After the office visit, people are satisfied and ready to leave
   visitors.pop();
   return vst;  
 }
@@ -132,16 +132,16 @@ floor::~floor() {
 
 waiting_room* floor::get_wr(void) { return wr; }
 
-office *floor::get_office(const short off_n){ return off[off_n-1]; } //[Harry] args from 1-10
+office *floor::get_office(const short off_n){ return off[off_n-1]; }  
 
 unsigned int floor::get_cap() { return cap; }
 
 unsigned int floor::get_curr() { return curr; }
 
 bool floor::enter(visitor *vst) {
-  if (get_curr() < get_cap()) {
-    if (get_office(vst->get_office_num())->enter(vst) == false)  // An [den] xwraei sto grafeio
-      wr->enter(vst);
+  if (get_curr() < get_cap()) {         //  As long as current visitors are less than maximum capacity
+    if (get_office(vst->get_office_num())->enter(vst) == false)  // If a visitor cannot have access to his preferred office, he enters the floor's waiting room
+      wr->enter(vst); 
     curr++;
     return true;
   }
@@ -150,13 +150,11 @@ bool floor::enter(visitor *vst) {
   return false;
 }
 
-// Randomly chooses and returns a person from an office
-// Please care about an empty floor and a non-empty WR
-visitor * floor::exit() {
-  --curr;
+visitor * floor::exit() {   // Randomly chooses and returns a person from an office
+  --curr;                   
   while(1){
     short i = rand() % 10 + 1;
-    if( get_office(i)->is_empty() == false ) {
+    if( get_office(i)->is_empty() == false ) {    // Care about an empty floor 
       return get_office(i)->exit();
     }
   }
@@ -187,17 +185,16 @@ void elevator::exit(visitor *vst) {
   grl->exit(vst);
 }
 
-// selects visitors ready2leave from the floor and puts them in the elevator
 void elevator::stop_down() {
   for (short fl_num = 4; fl_num >= 1; --fl_num)
   {
     floor *flr = fl[fl_num-1];
     std::cout << "Going down to floor " << fl_num  << std::endl;
-    unsigned int sel = get_cap() - get_curr();
-    for (unsigned int i = 0; i < sel && (flr->get_curr() != flr->get_wr()->get_curr()); ++i)
+    unsigned int sel = get_cap() - get_curr();                      // See how many visitors can fit in the elevator each time
+    for (unsigned int i = 0; i < sel && (flr->get_curr() != flr->get_wr()->get_curr()); ++i)    //  If the offices have people inside, get them out
     {
       ++curr;
-      visitors.push(flr->exit());
+      visitors.push(flr->exit());         //  Push them in the elevator
     }
   }
 }
@@ -206,19 +203,19 @@ void elevator::stop_up() {
   for (short cur_fl = 1; cur_fl <= 4; ++cur_fl)
   {
     std::cout << "Going up to floor " << cur_fl << std::endl;
-    // this is done so that ppl avoid being stuck eternally in the wr
+    //  This is done, to prevent people from being stuck eternally in the waiting room
     for (unsigned int i = 0, max = fl[cur_fl-1]->get_wr()->get_vst().size(); i < max; ++i)
     {
-      visitor *vst = fl[cur_fl-1]->get_wr()->exit();
+      visitor *vst = fl[cur_fl-1]->get_wr()->exit();      //  Get them out
       office *off =fl[cur_fl-1]->get_office(vst->get_office_num());
-      if (off->enter(vst) == false) // if they get rejected
-        fl[cur_fl-1]->get_wr()->enter(vst);
+      if (off->enter(vst) == false)   //  But if they get rejected
+        fl[cur_fl-1]->get_wr()->enter(vst);   // Put them back in the waiting room
     }
 
     for (unsigned int i = 0, max = visitors.size(); i < max; ++i)
     {
       visitor *vst = visitors.front();
-      if (!(vst->get_floor() == cur_fl && fl[cur_fl-1]->enter(vst)))   // if correct floor -> try to enter
+      if (!(vst->get_floor() == cur_fl && fl[cur_fl-1]->enter(vst)))   // If a visitor's choice is to get in the current floor, he tries to enter
         visitors.push(vst);
       else  curr--;
       visitors.pop();
@@ -227,24 +224,23 @@ void elevator::stop_up() {
 }
 
 void elevator::operate() {
-  while (crcl_rem--) {
-    while (get_curr() < get_cap() && grl->get_wr()->get_curr()){ // while not cap + has ppl w8ting
-      visitor* vst=grl->get_wr()->exit();
-      if(!enter(vst))                             // val'tous olous apo isogeio
-        grl->get_wr()->enter(vst);                // Stin periptwsh pou den mpei sto asanser, 3anavalton mesa sto grl 
+  while (crcl_rem--) {        //  While elevator circles remaining are non-zero
+    while (get_curr() < get_cap() && grl->get_wr()->get_curr()){  //  While current people are less than the elevator's maximum capacity 
+      visitor* vst=grl->get_wr()->exit();                                   //   and there are people waiting to get in the elevator
+      if(!enter(vst))                                         // Try to put them in
+        grl->get_wr()->enter(vst);                            // If not, put them back to the ground level
     }                                               
-    stop_up();
-    stop_down();
-    empty_all();
+    stop_up();                                                // Go all the way up 
+    stop_down();                                              // Go all the way down
+    empty_all();                                              // Let the satisfied visitors leave
   }
 }
 
-// calls elevator::exit on every satisfied client inside the lift
-void elevator::empty_all() {
-  for (unsigned int i = 0, max = visitors.size();  i < max; i++) 
+void elevator::empty_all() {        // Only the satisfied visitors leave the elevator
+  for (unsigned int i = 0, max = visitors.size();  i < max; i++)  
   { 
     visitor *vst = visitors.front();
-    if (vst->get_satisfaction() == false)
+    if (vst->get_satisfaction() == false)                      
       visitors.push(vst);  
     else 
       exit(vst);
