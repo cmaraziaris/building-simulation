@@ -24,7 +24,7 @@ Each visitor has an assosiated priority so they're treated fairly in the process
 #### Run
 
 ```cplusplus
-cd Project
+cd ~/building-simulation/
 
 make
 
