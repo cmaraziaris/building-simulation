@@ -22,9 +22,9 @@ int main(int argc, char const *argv[])
   unsigned int cap_elv = atoi(argv[5]);
   unsigned int num_vst = atoi(argv[6]);
   unsigned int l_circl = atoi(argv[7]);
-#if 0
+
   /* Generate visitors required */
-  mt19937 randomGen(chrono::steady_clock::now().time_since_epoch().count());      //   Waaaay better than rand()
+  mt19937 randomGen(chrono::steady_clock::now().time_since_epoch().count());      //   Waaaay better than rand() [ basically @spChalk flexing B) ]
   uniform_int_distribution<short> rnd4(1,4),rnd10(1,10);
 
   visitor **ppl = new visitor *[num_vst];
@@ -34,23 +34,14 @@ int main(int argc, char const *argv[])
     short off = rnd10(randomGen); 
     ppl[i]  = new visitor(fl, off, i+1);
   }
-#else // Useful when debugging; Can recreate results; Will remove before finalisation
-  srand(2);
-  visitor **ppl = new visitor *[num_vst];
-  for (unsigned int i = 0; i < num_vst; ++i)
-  {
-    short fl  = rand() %  4 + 1; 
-    short off = rand() % 10 + 1; 
-    ppl[i]  = new visitor(fl, off, i+1);
-  }
-#endif
-  /* Create a building, visitors attempt to enter */
+
+  /* Create a building, all visitors attempt to enter */
   building *service = new building(max_cap, cap_flr, cap_grd, cap_off, cap_elv, l_circl);
 
   for (unsigned int i = 0; i < num_vst; ++i)
-    service->enter(ppl[i]);           // Get EVERY person in (building->ground_level->waiting_room)
+    service->enter(ppl[i]);
 
-  service->get_elevator()->operate();           // Operate 
+  service->get_elevator()->operate();  /* Get the elevator to operate */
 
   /* Cleanup section */
   delete service;

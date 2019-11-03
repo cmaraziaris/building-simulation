@@ -6,13 +6,6 @@
 
 using namespace std;
 
-#if 0 //TODO: Remove before finalisation
-void debug_cout(visitor *vst){             
-  std::cout << "<<<<<<<<<<<<<<" << " F: " << vst->get_floor() << "  O: " 
-  << vst->get_office_num() << "  P: " << vst->get_priority() << std::endl; }
-
-#define DEBUG(X) debug_cout(X);
-#endif
 /* ============================================||  V I S I T O R   F U N C T I O N S  ||============================================ */ 
 
 visitor::visitor(const short fl, const short off, const unsigned int pr) 

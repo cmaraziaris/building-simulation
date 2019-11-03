@@ -79,7 +79,7 @@ public:
   bool enter(visitor *);
   visitor *exit();
   unsigned int get_cap();
-  bool is_empty();  //[Harry] used in elev::stop_down
+  bool is_empty();
 };
 
 /* ===========================================================||  F L O O R  ||=========================================================== */
@@ -99,7 +99,7 @@ public:
   unsigned int get_cap();
   unsigned int get_curr();
   waiting_room * get_wr();
-  office *get_office(const short office_n); //[Harry] added this one used on elevator::stop_down
+  office *get_office(const short office_n);
 };
 
 /* ===========================================================||  E L E V A T O R  ||=========================================================== */
@@ -129,10 +129,10 @@ public:
 
 class building
 {
-  const unsigned int cap;  /* capacity */
-  unsigned int curr; /*  current ppl inside */
+  const unsigned int cap;  /* cap  == capacity */
+  unsigned int curr;       /* curr == current # of ppl inside */
   ground_level * gr_lvl;
-  floor ** fl;  // Floor pointer (create floors dynamically during construction)
+  floor ** fl;
   elevator * el;
 public:
   building(const unsigned int N, const unsigned int Nf, const unsigned int Ng, const unsigned int No, const unsigned int Nl, const unsigned int lc);  
