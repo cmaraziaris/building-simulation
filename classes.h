@@ -19,16 +19,16 @@ class elevator;
 
 class visitor 
 {
-  short floor;
-  short office_num;
-  unsigned int priority; 
+  const short floor;
+  const short office_num;
+  const unsigned int priority; 
   bool is_satisfied;
 public:
-  visitor(short fl, short off, unsigned int pr);
+  visitor(const short fl, const short off, const unsigned int pr);
   unsigned int get_priority();
   short get_office_num();
   short get_floor();
-  void set_satisfaction(bool);
+  void set_satisfaction(const bool);
   bool get_satisfaction(); 
 };
 
@@ -36,10 +36,10 @@ public:
 
 class waiting_room
 {
-  unsigned int curr;
+  unsigned int curr;  /* Waiting room does not have maximum capacity */
   std::queue<visitor*> visitors;  
 public:
-  waiting_room();    /* Waiting room does not have maximum capacity */
+  waiting_room();
   ~waiting_room();
   void enter(visitor*);
   visitor* exit(); 
@@ -51,16 +51,16 @@ public:
 
 class ground_level
 {
-  unsigned int cap;
+  const unsigned int cap;
   unsigned int curr;
-  building* bld;  
+  building* const bld;  
   waiting_room* wr;
 public:
-  ground_level(int Ng, building *);
+  ground_level(const int Ng, building *const);
   ~ground_level();
-  bool enter(visitor*); 
-  void exit(visitor*); 
-  void wait(visitor*); //metaferei ton visitor sto wr 
+  bool enter(visitor*);
+  void exit(visitor*);
+  void wait(visitor*);
   unsigned int get_cap();
   unsigned int get_curr();
   waiting_room* get_wr();
@@ -70,11 +70,11 @@ public:
 
 class office
 {
-  short number;
-  unsigned int cap;
+  const short number;
+  const unsigned int cap;
   std::queue<visitor*> visitors;
 public:
-  office(unsigned int No, short num);
+  office(const unsigned int No, const short num);
   ~office();
   bool enter(visitor *);
   visitor *exit();
@@ -83,7 +83,7 @@ public:
 };
 
 /* ===========================================================||  F L O O R  ||=========================================================== */
-
+// [Harry] It's all yours =)
 class floor
 {
   short number; // [1,4]
@@ -143,3 +143,5 @@ public:
   elevator* get_elevator();
   ground_level* get_gr_lvl();
 };
+
+/* =============================================================||  END OF FILE  ||============================================================== */
