@@ -90,7 +90,7 @@ void ground_level::exit(visitor *vst){
 
 /* ============================================||  O F F I C E   F U N C T I O N S  ||============================================ */
 
-office::office(unsigned int No,short num) 
+office::office(const unsigned int No, const short num) 
 : number(num), cap(No)
 { std::cout << "Office #" << number << " has been created\n"; }
 
@@ -121,7 +121,7 @@ visitor *office::exit() {
 
 /* ============================================||  F L O O R   F U N C T I O N S  ||============================================ */ 
 
-floor::floor(unsigned int Nf, unsigned int No, short num) 
+floor::floor(const unsigned int Nf, const unsigned int No, const short num) 
 : number(num), cap(Nf), curr(0)
 {
   wr=new waiting_room;
@@ -139,13 +139,13 @@ floor::~floor() {
 
 waiting_room* floor::get_wr(void) { return wr; }
 
-office *floor::get_office(short off_n){ return off[off_n-1]; } //[Harry] args from 1-10
+office *floor::get_office(const short off_n){ return off[off_n-1]; } //[Harry] args from 1-10
 
 unsigned int floor::get_cap() { return cap; }
 
 unsigned int floor::get_curr() { return curr; }
 
-bool floor::enter(visitor* vst) {
+bool floor::enter(visitor *vst) {
   if (get_curr() < get_cap()) {
     if (get_office(vst->get_office_num())->enter(vst) == false)  // An [den] xwraei sto grafeio
       wr->enter(vst);
@@ -159,7 +159,7 @@ bool floor::enter(visitor* vst) {
 
 // Randomly chooses and returns a person from an office
 // Please care about an empty floor and a non-empty WR
-visitor *floor::exit() {
+visitor * floor::exit() {
   --curr;
   while(1){
     short i = rand() % 10 + 1;
@@ -172,12 +172,12 @@ visitor *floor::exit() {
 
 /* ============================================||  E L E V A T O R   F U N C T I O N S  ||============================================ */ 
 
-elevator::elevator(unsigned int Nl,unsigned int l_circl, floor **fl_arr,ground_level* gr_lvl)
-: cap(Nl), curr_fl(0), fl(fl_arr), grl(gr_lvl), curr(0), crcl_rem(l_circl) {}
+elevator::elevator(const unsigned int Nl, const unsigned int l_circl, floor **const fl_arr, ground_level*const  gr_lvl)
+: cap(Nl), fl(fl_arr), grl(gr_lvl), curr(0), crcl_rem(l_circl) {}
 
 elevator::~elevator() { std::cout << "No more ups and downs!\n"; }
 
-bool elevator::enter(visitor* vst) {
+bool elevator::enter(visitor *vst) {
   if (get_curr() < get_cap()) {
     visitors.push(vst);
     curr++;
@@ -267,7 +267,7 @@ unsigned int elevator::get_curr() { return curr; }
 
 /* ============================================||  B U I L D I N G   F U N C T I O N S  ||============================================ */ 
 
-building::building(unsigned int N, unsigned int Nf, unsigned int Ng, unsigned int No, unsigned int Nl, unsigned int l_circl)
+building::building(const unsigned int N, const unsigned int Nf, const unsigned int Ng, const unsigned int No, const unsigned int Nl, const unsigned int l_circl)
 : cap(N), curr(0) {
   std::cout << "A new building is ready for serving citizens!\n\n";
   gr_lvl = new ground_level(Ng, this);

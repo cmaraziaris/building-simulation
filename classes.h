@@ -83,43 +83,42 @@ public:
 };
 
 /* ===========================================================||  F L O O R  ||=========================================================== */
-// [Harry] It's all yours =)
+
 class floor
 {
-  short number; // [1,4]
-  unsigned int cap; 
+  const short number; // [1,4]
+  const unsigned int cap; 
   unsigned int curr;
   waiting_room* wr;
   office** off;
 public:
-  floor(unsigned int Nf, unsigned int No, short num);
+  floor(const unsigned int Nf, const unsigned int No, const short num);
   ~floor();
   bool enter(visitor *);    
   visitor *exit();
   unsigned int get_cap();
   unsigned int get_curr();
-  waiting_room* get_wr();
-  office *get_office(short office_n); //[Harry] added this one used on elevator::stop_down
+  waiting_room * get_wr();
+  office *get_office(const short office_n); //[Harry] added this one used on elevator::stop_down
 };
 
 /* ===========================================================||  E L E V A T O R  ||=========================================================== */
 
 class elevator
 {
-  unsigned int cap;
-  short curr_fl;
-  floor** fl;
-  ground_level* grl;
+  const unsigned int cap;
+  floor **const fl;
+  ground_level *const grl;
   unsigned int curr;
   unsigned int crcl_rem;   // circles remaining // ousiastika termatizei th diadikasia
   std::queue<visitor*> visitors;
-  bool enter(visitor*);     
-  void exit(visitor*);   
+  bool enter(visitor *);     
+  void exit(visitor *);   
   void empty_all(); 
   void stop_up();
   void stop_down();
 public:                          
-  elevator(unsigned int Nl, unsigned int lc, floor **, ground_level*);    
+  elevator(const unsigned int Nl, const unsigned int lc, floor **const, ground_level *const);    
   ~elevator();
   void operate();
   unsigned int get_cap();
@@ -130,18 +129,18 @@ public:
 
 class building
 {
-  unsigned int cap;  /* capacity */
+  const unsigned int cap;  /* capacity */
   unsigned int curr; /*  current ppl inside */
-  ground_level* gr_lvl;
-  floor** fl;  // Floor pointer (create floors dynamically during construction)
-  elevator* el;
+  ground_level * gr_lvl;
+  floor ** fl;  // Floor pointer (create floors dynamically during construction)
+  elevator * el;
 public:
-  building(unsigned int N, unsigned int Nf, unsigned int Ng, unsigned int No, unsigned int Nl, unsigned int lc);  
+  building(const unsigned int N, const unsigned int Nf, const unsigned int Ng, const unsigned int No, const unsigned int Nl, const unsigned int lc);  
   ~building();                                
   void enter(visitor *);
   void exit(visitor *);
-  elevator* get_elevator();
-  ground_level* get_gr_lvl();
+  elevator * get_elevator();
+  ground_level * get_gr_lvl();
 };
 
 /* =============================================================||  END OF FILE  ||============================================================== */
