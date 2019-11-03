@@ -21,7 +21,7 @@ The simulation is terminated when the elevator completes a specific number of ci
  **Note:** *All visitors attempt to enter at once, thus many visitors won't make their way inside.*
 
 ## Usage
-#### Run
+#### Compile & Run
 
 ```cplusplus
 cd ~/building-simulation/
