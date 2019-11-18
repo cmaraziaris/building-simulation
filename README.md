@@ -23,6 +23,16 @@ The simulation is terminated when the elevator completes a specific number of ci
 ## Usage
 #### Compile & Run
 
+#####  Run using Default Arguments
+
+```cplusplus
+cd ~/building-simulation/
+
+make run
+```
+
+#####  Run using Custom Arguments
+
 ```cplusplus
 cd ~/building-simulation/
 
@@ -30,6 +40,8 @@ make
 
 ./building_sim <max_cap> <floor_cap> <ground_cap> <office_cap> <elevator_cap> <number_of_visitors> <elevator_circles> 
 ```
+
+
 #### Clean
 
 ```cplusplus
