@@ -13,13 +13,13 @@ visitor::visitor(const short fl, const short off, const unsigned int pr)
 
 void visitor::set_satisfaction(const bool sat) { is_satisfied = sat; }
 
-bool visitor::get_satisfaction() { return is_satisfied; }
+bool visitor::get_satisfaction() const { return is_satisfied; }
 
-unsigned int visitor::get_priority() { return priority; }
+unsigned int visitor::get_priority() const { return priority; }
 
-short visitor::get_office_num() { return office_num; }
+short visitor::get_office_num() const { return office_num; }
 
-short visitor::get_floor()  { return floor; }
+short visitor::get_floor() const { return floor; }
 
 
 /* ============================================||  W A I T I N G    R O O M    F U N C T I O N S  ||============================================ */ 
@@ -40,9 +40,9 @@ visitor* waiting_room::exit() {
   return vst;
 }
 
-queue<visitor*> waiting_room::get_vst(void) { return visitors; }
+queue<visitor*> waiting_room::get_vst(void) const { return visitors; }
 
-unsigned int waiting_room::get_curr() { return curr; }
+unsigned int waiting_room::get_curr() const { return curr; }
 
 
 /* ============================================||  G R O U N D   L E V E L   F U N C T I O N S  ||============================================ */ 
@@ -59,11 +59,11 @@ ground_level::~ground_level(){
   std::cout << "End of service!\n";
 }
 
-waiting_room* ground_level::get_wr(void) { return wr; }
+waiting_room* ground_level::get_wr(void) const { return wr; }
 
-unsigned int ground_level::get_cap() { return cap; }
+unsigned int ground_level::get_cap() const { return cap; }
 
-unsigned int ground_level::get_curr() { return curr; }
+unsigned int ground_level::get_curr() const { return curr; }
 
 bool ground_level::enter(visitor* vst) {
   if (get_curr() == get_cap())            // If the ground level has as many visitors as its maximum capacity, entry is prohibited
@@ -91,7 +91,7 @@ office::~office() { std::cout << "End of the work!\n"; }
 
 bool office::is_empty() { return (visitors.size() == 0); } 
 
-unsigned int office::get_cap(){ return cap; }
+unsigned int office::get_cap() const { return cap; }
 
 bool office::enter(visitor *vst) {
   if (visitors.size() == (unsigned int)(get_cap())){
@@ -130,13 +130,13 @@ floor::~floor() {
   std::cout<<"End of service!\n";
 }
 
-waiting_room* floor::get_wr(void) { return wr; }
+waiting_room* floor::get_wr(void) const { return wr; }
 
-office *floor::get_office(const short off_n){ return off[off_n-1]; }  
+office *floor::get_office(const short off_n) const { return off[off_n-1]; }  
 
-unsigned int floor::get_cap() { return cap; }
+unsigned int floor::get_cap() const { return cap; }
 
-unsigned int floor::get_curr() { return curr; }
+unsigned int floor::get_curr() const { return curr; }
 
 bool floor::enter(visitor *vst) {
   if (get_curr() < get_cap()) {         //  As long as current visitors are less than maximum capacity
@@ -249,9 +249,9 @@ void elevator::empty_all() {        // Only the satisfied visitors leave the ele
   }
 }
 
-unsigned int elevator::get_cap() { return cap; }
+unsigned int elevator::get_cap() const { return cap; }
 
-unsigned int elevator::get_curr() { return curr; }
+unsigned int elevator::get_curr() const { return curr; }
 
 
 /* ============================================||  B U I L D I N G   F U N C T I O N S  ||============================================ */ 
@@ -297,8 +297,8 @@ void building::exit(visitor *vst) {
             << "  P: " << vst->get_priority() << " " << std::endl;
 }
 
-ground_level* building::get_gr_lvl(void) { return gr_lvl; }
+ground_level* building::get_gr_lvl(void) const { return gr_lvl; }
 
-elevator* building::get_elevator(void) { return el; }
+elevator* building::get_elevator(void) const { return el; }
 
 /* ========================================================||  END OF FILE  ||======================================================== */ 

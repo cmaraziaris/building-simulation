@@ -25,11 +25,11 @@ class visitor
   bool is_satisfied;
 public:
   visitor(const short fl, const short off, const unsigned int pr);
-  unsigned int get_priority();
-  short get_office_num();
-  short get_floor();
+  unsigned int get_priority() const;
+  short get_office_num() const;
+  short get_floor() const;
   void set_satisfaction(const bool);
-  bool get_satisfaction(); 
+  bool get_satisfaction() const; 
 };
 
 /* ===========================================================||  W A I T I N G    R O O M  ||=========================================================== */
@@ -43,8 +43,8 @@ public:
   ~waiting_room();
   void enter(visitor*);
   visitor* exit(); 
-  unsigned int get_curr();
-  std::queue<visitor*> get_vst();
+  unsigned int get_curr() const;
+  std::queue<visitor*> get_vst() const;
 };
 
 /* ===========================================================||  G R O U N D   L E V E L  ||=========================================================== */
@@ -61,9 +61,9 @@ public:
   bool enter(visitor*);
   void exit(visitor*);
   void wait(visitor*);
-  unsigned int get_cap();
-  unsigned int get_curr();
-  waiting_room* get_wr();
+  unsigned int get_cap() const;
+  unsigned int get_curr() const;
+  waiting_room* get_wr() const;
 };
 
 /* ===========================================================||  O F F I C E  ||=========================================================== */
@@ -78,7 +78,7 @@ public:
   ~office();
   bool enter(visitor *);
   visitor *exit();
-  unsigned int get_cap();
+  unsigned int get_cap() const;
   bool is_empty();
 };
 
@@ -96,10 +96,10 @@ public:
   ~floor();
   bool enter(visitor *);    
   visitor *exit();
-  unsigned int get_cap();
-  unsigned int get_curr();
-  waiting_room * get_wr();
-  office *get_office(const short office_n);
+  unsigned int get_cap() const;
+  unsigned int get_curr() const;
+  waiting_room * get_wr() const;
+  office *get_office(const short office_n) const;
 };
 
 /* ===========================================================||  E L E V A T O R  ||=========================================================== */
@@ -121,8 +121,8 @@ public:
   elevator(const unsigned int Nl, const unsigned int lc, floor **const, ground_level *const);    
   ~elevator();
   void operate();
-  unsigned int get_cap();
-  unsigned int get_curr();
+  unsigned int get_cap() const;
+  unsigned int get_curr() const;
 };
 
 /* ===========================================================||  B U I L D I N G  ||=========================================================== */
@@ -139,8 +139,8 @@ public:
   ~building();                                
   void enter(visitor *);
   void exit(visitor *);
-  elevator * get_elevator();
-  ground_level * get_gr_lvl();
+  elevator * get_elevator() const;
+  ground_level * get_gr_lvl() const;
 };
 
 /* =============================================================||  END OF FILE  ||============================================================== */
